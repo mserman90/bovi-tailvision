@@ -1,9 +1,9 @@
 # BOVI-TAILVISION & BOVI-FARMER: BİLGİSAYARLI GÖRÜ VE UÇ BİRİM YAPAY ZEKA TABANLI SIĞIR KIZGINLIK TESPİT SİSTEMİ
-## TEKNİK TEORİ, BİYOLOJİK KİNEMATİK, AKADEMİK METODOLOJİ VE KULLANIM KILAVUZU
+## TEKNİK TEORİ, BİYOLOJİK KİNEMATİK, ÇOKLU İNEK TAKİP METODOLOJİSİ VE KULLANIM KILAVUZU
 
 **Yazarlar:** Bovi-TailVision Araştırma & Geliştirme Grubu  
 **Tarih:** Ekim 2026  
-**Doküman Sürümü:** 1.0.0 (Production Release)
+**Doküman Sürümü:** 1.1.0 (Multi-Cow Group Monitoring Release)
 
 ---
 
@@ -11,21 +11,19 @@
 
 Süt sığırcılığı işletmelerinde kızgınlığın (östrus) zamanında ve doğru tespit edilememesi; uzayan buzağılama aralıkları, artan tohumlama maliyetleri ve yıllık süt veriminde telafisi güç ekonomik kayıplara neden olmaktadır. Geleneksel görsel gözlem yöntemleri iş gücü yoğun ve gece saatlerinde yetersiz kalırken; boyunluk, kulak küpesi ve pedometre gibi giyilebilir sensör sistemleri yüksek ilk yatırım ve bakım maliyetleri nedeniyle küçük ve orta ölçekli işletmeler için erişilemez durumdadır. 
 
-Bu çalışmada; bağlı duraklı veya serbest ahırlarda ineğin kaudal (pelvis) açısına sabitlenen atıl/eski model Android akıllı telefonların yerleşik kamerası ve işlem gücünü kullanan, derin öğrenme tabanlı uç birim (Edge AI) sığır kızgınlık tespit sistemi (**Bovi-TailVision**) geliştirilmiştir. Sistem; YOLO11n-pose mimarisinin INT8 kuantize varyantı ile ineğin anatomik ekseninden 4 temel anahtar noktayı ($P_{\text{spine}}, P_{\text{tailbase}}, P_{\text{tailmid}}, P_{\text{vulva}}$) 15 FPS hızında takip eder. Kuyruk sapma açısı ($\theta$), vulva açık kalma frekansı ($R_{\text{open}}$) ve açık kalma süresi ($T_{\text{exp}}$) kayan zaman penceresinde işlenir. Dışkılama ve sinek savurma hareketleri zamansal durum makinesi (Temporal Movement Filter) ile elenerek false-positive alarmlar minimize edilir. Kızgınlık eşiği aşıldığında ($R_{\text{open}} \ge \%65$), çiftçinin cep telefonundaki **Bovi-Farmer** uygulamasına MQTT protokolü üzerinden milisaniyeler mertebesinde sesli siren ve AM/PM tohumlama penceresi uyarısı iletilir. Yapılan deneysel simülasyonlarda sistem \%88.4 duyarlılık (sensitivity) ve \%93.1 özgüllük (specificity) seviyelerine ulaşmıştır.
+Bu çalışmada; bağlı duraklı veya serbest ahırlarda durak sırasının kaudal (pelvis) açısına sabitlenen atıl/eski model Android akıllı telefonların yerleşik kamerası ve işlem gücünü kullanarak **tek bir kamera ile bir grup ineğin (3 ila 6 durak)** eş zamanlı kızgınlığını izleyen derin öğrenme tabanlı uç birim (Edge AI) sistemi (**Bovi-TailVision**) geliştirilmiştir. Sistem; YOLO11n-pose mimarisinin INT8 kuantize varyantı ile kare başına **tek bir çıkarım geçişinde (Single Inference Pass)** görüş alanındaki tüm ineklerin anatomik ekseninden 4 temel anahtar noktayı ($P_{\text{spine}}, P_{\text{tailbase}}, P_{\text{tailmid}}, P_{\text{vulva}}$) 15 FPS hızında takip eder. Çoklu nesne takip motoru (`MultiCowTracker`), uzamsal durak yuvalama (Spatial Stall Slotting) yöntemiyle her hayvanı kendi durağına zimmetler ve her inek için bağımsız kayan pencere ($R_{\text{open}}^i$) ve gürültü filtresi (dışkılama ve sinek savurma durum makinesi) işletir. Kızgınlık eşiği aşıldığında ($R_{\text{open}} \ge \%65$), çiftçinin cep telefonundaki **Bovi-Farmer** uygulamasına MQTT protokolü üzerinden milisaniyeler mertebesinde sesli siren, durak numarası ve AM/PM tohumlama penceresi uyarısı iletilir. Yapılan deneysel simülasyonlarda sistem \%88.4 duyarlılık (sensitivity) ve \%93.1 özgüllük (specificity) seviyelerine ulaşmıştır.
 
-**Anahtar Kelimeler:** Süt Sığırcılığı, Östrus Tespiti, Bilgisayarlı Görü, Anahtar Nokta Tespiti (Pose Estimation), Uç Birim Yapay Zeka (Edge Computing), Sürdürülebilir Tarım Teknolojileri.
+**Anahtar Kelimeler:** Süt Sığırcılığı, Östrus Tespiti, Çoklu Nesne Takibi (MOT), Bilgisayarlı Görü, Anahtar Nokta Tespiti (Pose Estimation), Uç Birim Yapay Zeka (Edge Computing), Sürdürülebilir Tarım Teknolojileri.
 
 ---
 
 ## 1. GİRİŞ VE ETOLOJİK ALTYAPI
 
 ### 1.1. Biyolojik Problem ve Ekonomik Etki
-Süt ineklerinde östrus döngüsü ortalama 21 günde bir tekrarlanan ve fertil periyodun başlangıcını işaret eden hormonal bir süreçtir. Östrus sırasında östrojen seviyesi zirveye ulaşırken progesteron ($P_4$) konsantrasyonu bazal seviyelere ($< 1\text{ ng/mL}$) geriler (Roelofs et al., 2010). Modern yüksek verimli Holstein ırklarında metabolik klirensin yüksek olması sebebiyle östrus belirtileri silikleşmiş, ortalama kızgınlık süresi 15 saatten 6-8 saat bandına gerilemiştir (Sveberg et al., 2011).
-
-Kaçırılan her kızgınlık döngüsü, inek başına yaklaşık 21 günlük açık gün (days open) uzamasına ve laktasyon başına ortalama 150-250 Euro doğrudan kâr kaybına yol açmaktadır (Inchaisri et al., 2010).
+Süt ineklerinde östrus döngüsü ortalama 21 günde bir tekrarlanan ve fertil periyodun başlangıcını işaret eden hormonal bir süreçtir. Östrus sırasında östrojen seviyesi zirveye ulaşırken progesteron ($P_4$) konsantrasyonu bazal seviyelere ($< 1\text{ ng/mL}$) geriler (Roelofs et al., 2010). Modern yüksek verimli Holstein ırklarında metabolik klirensin yüksek olması sebebiyle östrus belirtileri silikleşmiş, ortalama kızgınlık süresi 15 saatten 6-8 saat bandına gerilemiştir (Sveberg et al., 2011). Kaçırılan her kızgınlık döngüsü, inek başına yaklaşık 21 günlük açık gün (days open) uzamasına ve laktasyon başına ortalama 150-250 Euro doğrudan kâr kaybına yol açmaktadır (Inchaisri et al., 2010).
 
 ### 1.2. Kuyruk Kinematiği ve Vulva Açığa Çıkma İlişkisi
-İneklerde kızgınlık davranışının altın standardı "ayakta durma refleksi" (standing heat) olmakla birlikte, bağlı duraklı (tie-stall) ahırlarda ineklerin birbirine atlaması fiziksel olarak mümkün değildir. Bu ortamlarda ikincil kızgınlık belirtileri hayati öneme sahiptir:
+Bağlı duraklı (tie-stall) ahırlarda veya yemlik kilitlerinde ineklerin birbirine atlaması fiziksel olarak kısıtlıdır. Bu ortamlarda ikincil kızgınlık belirtileri hayati öneme sahiptir:
 * **Kaudal Huzursuzluk:** Kızgınlıktaki inek kuyruğunu vulvayı örtecek şekilde nötr tutmak yerine sık sık sağa/sola saptırır veya kökten hafifçe kaldırır (Van Eerdenburg et al., 2002).
 * **Vulvanın Açığa Çıkması:** Normal diöstrus günlerinde kuyruk \%9.37 oranında vulvayı açık bırakırken, östrus gününde (d0) bu oran \%68.75 - \%80.0 bandına fırlamaktadır (Perez et al., 2022).
 
@@ -34,39 +32,39 @@ Kaçırılan her kızgınlık döngüsü, inek başına yaklaşık 21 günlük a
 ## 2. MATEMATİKSEL MODEL VE KİNEMATİK ANALİZ
 
 ### 2.1. İskelet Şeması ve Koordinat Düzlemi
-Model, 2B kartezyen düzlemde 4 anatomik referans noktasını takip eder:
-$$P_{\text{spine}} = (x_s, y_s), \quad P_{\text{tailbase}} = (x_0, y_0), \quad P_{\text{tailmid}} = (x_1, y_1), \quad P_{\text{vulva}} = (x_v, y_v)$$
+Model, 2B kartezyen düzlemde her inek örneği ($i$) için 4 anatomik referans noktasını takip eder:
+$$P_{\text{spine}}^i = (x_s^i, y_s^i), \quad P_{\text{tailbase}}^i = (x_0^i, y_0^i), \quad P_{\text{tailmid}}^i = (x_1^i, y_1^i), \quad P_{\text{vulva}}^i = (x_v^i, y_v^i)$$
 
 ### 2.2. Kuyruk Sapma Açısının ($\theta$) Hesaplanması
 Gövde dikey ekseni referans vektörü $\vec{V}_{\text{ref}}$ ve kuyruk eksen vektörü $\vec{V}_{\text{tail}}$ şu şekilde tanımlanır:
-$$\vec{V}_{\text{ref}} = (x_0 - x_s, y_0 - y_s)$$
-$$\vec{V}_{\text{tail}} = (x_1 - x_0, y_1 - y_0)$$
+$$\vec{V}_{\text{ref}} = (x_0 - x_s, y_0 - y_s), \quad \vec{V}_{\text{tail}} = (x_1 - x_0, y_1 - y_0)$$
 
-İki vektör arasındaki açı $\theta$, nokta çarpımı ve öklid normları kullanılarak türetilir:
+İki vektör arasındaki açı $\theta$:
 $$\cos(\theta) = \frac{\vec{V}_{\text{tail}} \cdot \vec{V}_{\text{ref}}}{\|\vec{V}_{\text{tail}}\| \|\vec{V}_{\text{ref}}\|}$$
 $$\theta = \arccos\left( \text{clamp}(\cos(\theta), -1.0, 1.0) \right) \times \frac{180^\circ}{\pi}$$
 
-Sapmanın yönü (sağ veya sol sapma), 2B çapraz çarpımın (z-bileşeni) işareti ile belirlenir:
+Sapmanın yönü (sağ veya sol sapma), 2B çapraz çarpımın z-bileşeni ile belirlenir:
 $$\text{Cross}_z = V_{\text{ref}, x} \cdot V_{\text{tail}, y} - V_{\text{ref}, y} \cdot V_{\text{tail}, x}$$
 $$\theta_{\text{signed}} = \begin{cases} -\theta, & \text{Cross}_z < 0 \quad (\text{Sola Sapma - LTail}) \\ +\theta, & \text{Cross}_z \ge 0 \quad (\text{Sağa Sapma - RTail}) \end{cases}$$
 
 ### 2.3. Vulva Açıklık Durumu ($E(k)$) ve Kayan Pencere
-Vulva anatomik merkezi $P_{\text{vulva}}$ etrafında yarıçapı $R_{\text{roi}} = 35\text{ piksel}$ olan dairesel bir İlgi Alanı ($\text{ROI}_v$) tanımlanır. Kuyruk eklemi ile vulva merkezi arasındaki mesafe:
+Vulva anatomik merkezi $P_{\text{vulva}}$ etrafında yarıçapı $R_{\text{roi}} = 35\text{ piksel}$ olan dairesel bir İlgi Alanı ($\text{ROI}_v$) tanımlanır:
 $$D_{\text{tail-vulva}} = \sqrt{(x_1 - x_v)^2 + (y_1 - y_v)^2}$$
-
-Her $k$. karede vulva açıklık göstergesi $E(k)$:
 $$E(k) = \begin{cases} 1, & |\theta_{\text{signed}}| \ge 20^\circ \land D_{\text{tail-vulva}} > R_{\text{roi}} \\ 0, & \text{diğer} \end{cases}$$
 
 5 dakikalık kayan pencerede ($N = 5 \times 60 \times \text{FPS}$ kare):
-$$R_{\text{open}} = \left( \frac{1}{N} \sum_{k=1}^{N} E(k) \right) \times 100 \quad [\%]$$
-$$T_{\text{exp}} = \sum_{k=1}^{N} \frac{E(k)}{\text{FPS}} \quad [\text{saniye}]$$
+$$R_{\text{open}} = \left( \frac{1}{N} \sum_{k=1}^{N} E(k) \right) \times 100 \quad [\%], \quad T_{\text{exp}} = \sum_{k=1}^{N} \frac{E(k)}{\text{FPS}} \quad [\text{saniye}]$$
 
-### 2.5. Çoklu Sığır ve Grup Takip Mekanizması (Multi-Instance Association)
-Serbest duraklı veya bağlı ahırlarda, tek bir geniş açılı kamera $M$ adet ineği ($M \in [2, 6]$) aynı görüş alanında kapsar.
-1. **Uzamsal Durak Yuvaları (Spatial Stall Slotting):** Görüntü genişliği $W$, durak adedine bölünerek uzamsal sütunlar ($\text{Slot}_i = [i \cdot \frac{W}{M}, (i+1) \cdot \frac{W}{M}]$) tanımlanır.
-2. **Kesişim ve Merkez Ataması:** Her $j$. inek tespiti, pelvis merkez koordinatı $x_c^j$'nin düştüğü durak indeksine atanır:
-   $$\text{Stall}(j) = \left\lfloor \frac{x_c^j}{W / M} \right\rfloor$$
-3. **Bağımsız Durum Makineleri:** Her durak kendi bağımsız kayan penceresine ($R_{\text{open}}^i$) ve gürültü filtresine sahiptir. Bir ineğin dışkılaması veya kuyruk çırpması, komşu duraktaki hayvanın kızgınlık indeksini etkilemez.
+### 2.4. Sahte Hareketlerin (Gürültü) Ayıklanması
+1. **Dışkılama/İdrar Filtresi:** Kuyruk tabandan yukarı kalkar ($y_0 - y_1 > 25\text{ px}$), ancak yatay sapma minimaldir ($|\theta| < 15^\circ$). Bu durum tespit edildiğinde ve süresi $< 15$ saniye ise $E(k) = 0$ atanır ve östrus sayacı kilitlenir.
+2. **Sinek Kovma / Refleks Filtresi:** Sinek ısırması sonucu anlık çırpmalar yüksek frekanslı salınımlardır ($t < 0.3\text{ sn}$). Yalnızca kesintisiz olarak en az $1.5\text{ saniye}$ süren kalıcı açığa çıkışlar kabul edilir.
+
+### 2.5. Çoklu Sığır ve Grup Takip Mekanizması (Multi-Instance Spatial Tracker)
+Tek bir kameranın kadrajında $M$ adet inek ($M \in [2, 6]$) yer aldığında:
+1. **Uzamsal Durak Yuvalama (Spatial Stall Slotting):** Görüntü genişliği $W$, durak adedine bölünerek uzamsal sütunlar ($\text{Slot}_j = [j \cdot \frac{W}{M}, (j+1) \cdot \frac{W}{M}]$) tanımlanır.
+2. **Kesişim ve Merkez Ataması:** Her $i$. inek tespiti, pelvis merkez koordinatı $x_c^i$'nin düştüğü durak indeksine atanır:
+   $$\text{Stall}(i) = \left\lfloor \frac{x_c^i}{W / M} \right\rfloor$$
+3. **Bağımsız Durum Makineleri:** Her durak kendi bağımsız kayan penceresine ($R_{\text{open}}^j$) ve gürültü filtresine sahiptir. Bir ineğin dışkılaması veya kuyruk sallaması, komşu duraktaki hayvanın kızgınlık indeksini etkilemez.
 
 ---
 
@@ -83,16 +81,18 @@ $$\text{Pencere}_{\text{Başlangıç}} = t_{\text{alarm}} + 12\text{ saat}, \qua
 ## 4. UYGULAMA İÇİ KULLANIM KILAVUZU (OPERATIONAL MANUAL)
 
 ### 4.1. Bovi-TailVision (Ahırdaki Kamera İstasyonu)
-1. **Montaj:** IP65 korumalı kutuya yerleştirilen telefon, ineğin kuyruk sokumundan $1.5\text{ metre}$ geriye, sırt hizasının $25\text{ cm}$ üzerine, aşağıya $15^\circ$ açıyla sabitlenir.
-2. **Kamera Kalibrasyonu:** Ekranda **"Montaj / Kamera Önizleme"** butonuna basılarak yeşil iskelet çizgilerinin kuyruk sokumu ve vulvayı tam karşıdan ortaladığı doğrulanır.
-3. **Konfigürasyon:** İnek Küpe No (örn. `TR-06-3842`) ve MQTT Broker IP adresi (örn. `tcp://192.168.1.100:1883`) girilir.
-4. **Başlatma:** **"Sistemi Başlat"** butonuna basılır. Önizleme otomatik kapanır ve 24/7 analiz başlar.
+1. **Montaj:** 
+   * **Grup İzleme (Önerilen):** IP65 kutu, 3-4 durağın arkasındaki tavan kirişine $2.8\text{ m}$ yüksekliğe, ineklerin arkasından $3.0\text{ m}$ mesafeye, aşağıya $25^\circ$ açıyla monte edilir.
+   * **Tek İnek İzleme:** İnek arkasından $1.5\text{ m}$ mesafeye, sırtın $25\text{ cm}$ üzerine $15^\circ$ açıyla monte edilir.
+2. **Kamera Kalibrasyonu:** **"Grup Önizlemeyi Aç"** butonuna basılarak ekrandaki uzamsal durak kılavuz çizgilerinin ahırdaki durak bölme demirleriyle (stalls) hizalandığı doğrulanır.
+3. **Konfigürasyon:** Ahır MQTT Broker IP adresi (örn. `tcp://192.168.1.100:1883`) girilir. Durak-İnek küpe numarası eşleşmeleri otomatik yüklenir.
+4. **Başlatma:** **"Sistemi Başlat"** butonuna basılır. Önizleme otomatik kapanır ve 24/7 çoklu analiz başlar.
 5. **Termal Koruma:** **"Ekranı Karart"** butonuna basıldığında ekran $0.0\text{f}$ parlaklığa iner ve siyah perde devreye girer. Tekrar arayüze dönmek için ekrana **çift tıklanır**.
 
 ### 4.2. Bovi-Farmer (Çiftçinin Cep Telefonu)
 1. **Kurulum:** Çiftçinin günlük kullandığı Android telefona `farmer_app-debug.apk` yüklenir.
-2. **İlk Açılış:** Bildirim ve alarm izinleri onaylanır. Üst bardaki "Broker Bağlantısı: Aktif" ibaresi kontrol edilir.
-3. **Alarm Durumu:** Bir inek kızgınlığa girdiğinde telefon yüksek sesli alarm çalar ve ekranı uyandırır.
+2. **İlk Açılış:** Bildirim ve alarm izinleri onaylanır. Üst bardaki "Broker Bağlantısı: Aktif" ibaresi ve grup durak tablosu kontrol edilir.
+3. **Alarm Durumu:** Gruptaki herhangi bir inek kızgınlığa girdiğinde telefon yüksek sesli siren çalar, ekranı uyandırır ve **hangi duraktaki hangi ineğin kızgınlıkta olduğunu** bildirir.
 4. **Aksiyon:** Kart üzerindeki önerilen tohumlama saatinde veteriner/tohumlamacı çağrılır ve tohumlama bitince **"Tohumlama Yapıldı"** butonuna basılarak kayıt arşivlenir.
 
 ---

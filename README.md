@@ -1,6 +1,6 @@
 # Bovi-TailVision: Eski Model Android Cihazlar İçin Görüntü İşleme Tabanlı Sığır Kızgınlık Tespit Sistemi
 
-Bovi-TailVision; bağlı duraklı veya serbest ahırlarda, ineğin kaudal (pelvis) açısına sabitlenecek **eski model Android akıllı telefonların** kamera ve yerleşik işlem gücünü kullanarak kuyruk açısı sapması, vulvanın açığa çıkma süresi/frekansı ve mikro-hareket dinamiklerini gerçek zamanlı izleyip kızgınlık (östrus) alarmları üreten uç nokta (Edge Computing) sistemidir.
+Bovi-TailVision; bağlı duraklı veya serbest ahırlarda, ineğin veya bir **grup ineğin (3 ila 6 durak/yemlik kilit sırası)** kaudal (pelvis) açısına sabitlenecek **eski model Android akıllı telefonların** kamera ve yerleşik işlem gücünü kullanarak kuyruk açısı sapması, vulvanın açığa çıkma süresi/frekansı ve mikro-hareket dinamiklerini gerçek zamanlı izleyip kızgınlık (östrus) alarmları üreten uç nokta (Edge Computing) sistemidir.
 
 ---
 
@@ -9,19 +9,29 @@ Bovi-TailVision; bağlı duraklı veya serbest ahırlarda, ineğin kaudal (pelvi
 ```
 bovi-tailvision/
 ├── android/                   # Multi-Module Android Projesi
-│   ├── app/                   # [UÇ NOKTA KAMERA CİHAZI] Ahırda ineğe bakan telefon
+│   ├── app/                   # [UÇ NOKTA KAMERA CİHAZI] Ahırda gruba bakan telefon
 │   │   ├── src/main/java/com/bovivision/estrus/
 │   │   │   ├── MainActivity.kt               # Kontrol & termal ekran karartma
-│   │   │   ├── analyzer/                     # Zero-alloc CameraX & Kinematik Motoru
-│   │   │   ├── service/                      # 7/24 Kesintisiz Foreground Servis
-│   │   │   └── network/                      # Uç birim MQTT yayıncısı
+│   │   │   ├── analyzer/
+│   │   │   │   ├── BoviTailAnalyzer.kt       # Çoklu nesne CameraX analizörü
+│   │   │   │   ├── MultiCowTracker.kt        # Uzamsal durak eşleme ve MOT takip motoru
+│   │   │   │   ├── KinematicsEngine.kt       # Vektörel açı & sapma motoru
+│   │   │   │   └── TemporalMovementFilter.kt # Dışkılama ve sinek savurma filtresi
+│   │   │   ├── service/
+│   │   │   │   ├── EstrusDetectionService.kt # 7/24 Kesintisiz Foreground Servis
+│   │   │   │   └── BootReceiver.kt           # Cihaz açıldığında oto-başlatıcı
+│   │   │   ├── network/
+│   │   │   │   ├── MqttManager.kt            # Uç birim MQTT yayıncısı
+│   │   │   │   └── TelemetryModels.kt        # JSON telemetri & alarm modelleri
+│   │   │   └── utils/
+│   │   │       └── DeviceHealthMonitor.kt    # CPU sıcaklık, RAM ve batarya takibi
 │   │   └── src/main/assets/bovi_tail_pose.tflite
 │   │
 │   ├── farmer_app/            # [ÇİFTÇİ CEP TELEFONU UYGULAMASI]
 │   │   ├── src/main/java/com/bovivision/farmer/
-│   │   │   ├── FarmerMainActivity.kt         # Alarm listesi & tohumlama takibi
-│   │   │   ├── service/FarmerAlertListenerService.kt # Sesli/Titreşimli Alarm Servisi
-│   │   │   ├── adapter/AlertAdapter.kt       # Alarm kartları & onay mekanizması
+│   │   │   ├── FarmerMainActivity.kt         # Sürü/grup alarm listesi & tohumlama takibi
+│   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi
+│   │   │   ├── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
 │   │   │   └── model/FarmerAlertModel.kt     # AM/PM kuralı hesaplayıcı
 │   │   └── src/main/res/layout/
 │   │
@@ -36,11 +46,13 @@ bovi-tailvision/
 ├── farm_server/               # Ahır yerel sunucusu & IoT Broker
 │   ├── docker-compose.yml                    # Mosquitto MQTT & Listener servisi
 │   ├── mosquitto.conf                        # Broker yapılandırması
-│   └── farm_dashboard_listener.py            # Telemetri ve alarm dinleyici daemon
+│   └── farm_dashboard_listener.py            # Telemetri, alarm dinleyici & Telegram köprüsü
 │
-└── docs/                      # Mühendislik ve donanım dokümanları
-    ├── ARCHITECTURE.md                       # Ayrıntılı sistem mimarisi
-    └── HARDWARE_SETUP.md                     # Batarya iptali, BSI bypass, IP65 kutu
+└── docs/                      # Mühendislik, teori ve donanım dokümanları
+    ├── ACADEMIC_PAPER_AND_MANUAL.md          # Akademik makale, teori ve operasyon kılavuzu
+    ├── ARCHITECTURE.md                       # Ayrıntılı çoklu inek sistem mimarisi
+    ├── HARDWARE_SETUP.md                     # Batarya iptali, BSI bypass, IP65 grup montajı
+    └── index.html                            # Çift cihazlı interaktif canlı web demosu
 ```
 
 ---
@@ -53,10 +65,10 @@ bovi-tailvision/
    ```bash
    cd android
 
-   # 1. Ahırdaki Kamera Cihazı (Uç Nokta Algılayıcı)
+   # 1. Ahırdaki Kamera Cihazı (Grup Uç Nokta Algılayıcı)
    ./gradlew :app:assembleDebug
 
-   # 2. Çiftçinin Cep Telefonu Uygulaması (Alarm & Takip)
+   # 2. Çiftçinin Cep Telefonu Uygulaması (Grup Alarm & Takip)
    ./gradlew :farmer_app:assembleDebug
    ```
 3. Oluşan APK'ları cihazlara yükleyin:
@@ -88,7 +100,8 @@ python train_and_export_tflite.py
 
 ## ⚙️ Donanım Kurulumu (Önemli Güvenlik Adımları)
 
-Detaylı bağlantı şemaları için [HARDWARE_SETUP.md](file:///C:/Users/murat.erman/.gemini/antigravity/scratch/bovi-tailvision/docs/HARDWARE_SETUP.md) dokümanını inceleyin:
+Detaylı bağlantı ve grup montaj şemaları için [HARDWARE_SETUP.md](file:///C:/Users/murat.erman/.gemini/antigravity/scratch/bovi-tailvision/docs/HARDWARE_SETUP.md) dokümanını inceleyin:
 * **Batarya İptali:** 7/24 şarjda pil şişmesini önlemek için batarya çıkarılmalı; anakart BAT+ ve GND pinlerine **4.0V DC-DC (LM2596)** bağlanmalıdır.
 * **BSI Direnci:** Cihazın açılabilmesi için GND ile BSI pinleri arasına **$10\text{ k}\Omega$ direnç** bağlanmalıdır.
+* **Grup Montajı:** 3-4 duraklık bir sırayı izlemek için kamera yerden $2.8\text{ m}$ yüksekliğe, hayvanların $3.0\text{ m}$ arkasına $25^\circ$ eğimle yerleştirilir.
 * **Yalıtım:** Amonyak ve neme karşı **IP65 buat kutusu** ve optik polikarbonat pencere kullanılmalıdır.

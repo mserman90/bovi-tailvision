@@ -1,6 +1,6 @@
 # BOVI-TAILVISION: DONANIM MODİFİKASYON VE MONTAJ KILAVUZU
 
-Bu kılavuz, eski model bir Android akıllı telefonun ahır ortamında 7/24 kesintisiz ve yangın riski olmadan çalışabilmesi için gerekli donanım modifikasyonlarını açıklar.
+Bu kılavuz, eski model bir Android akıllı telefonun ahır ortamında 7/24 kesintisiz ve yangın riski olmadan çalışabilmesi, tek veya **grup halindeki (3-6 durak)** inekleri yüksek doğrulukla izleyebilmesi için gerekli donanım modifikasyonlarını ve montaj geometrisini açıklar.
 
 ---
 
@@ -42,26 +42,27 @@ Ahır ortamı; amonyak gazı ($NH_3$), yüksek nem ($\%80+$), toz ve sineklerle 
 
 ---
 
-### 3. MONTAJ GEOMETRİSİ VE KAMERA AÇISI (TIE-STALL / BAĞLI DURAK)
+### 3. MONTAJ GEOMETRİSİ VE KAMERA AÇISI
 
-Kuyruk açısının ve vulvanın doğru tespit edilebilmesi için montaj açısı kritik öneme sahiptir:
+#### 3.1. Grup / Çoklu İnek İzleme Montajı (3 ila 6 Bağlı Durak Sırası)
+Geniş açılı tek bir kamera ile yan yana duran bir grup ineği izlemek için:
+* **Mesafe:** Hayvanların arka ekseninden (pelvis hizasından) **$2.5\text{ m} - 3.5\text{ m}$ geriye** (arka servis koridoru tavan kirişine) sabitlenir.
+* **Yükseklik:** Yerden **$2.4\text{ m} - 3.0\text{ m}$ yüksekliğe** monte edilir.
+* **Eğim Açısı:** Aşağıya doğru **$25^\circ - 30^\circ$ açıyla** yönlendirilir.
+* **Kapsama Alanı (Görüş Açısı - FOV):** Akıllı telefonun standart geniş açılı lensi ($75^\circ - 85^\circ$ FOV), $3\text{ metre}$ mesafeden yaklaşık **$4.5\text{ m} - 5.5\text{ m}$ genişliğindeki durak sırasını** (yan yana 3-4 bağlı durağı) net biçimde kadraja alır.
 
-* **Mesafe:** İneğin kuyruk sokumundan (pelvis) **1.2 metre – 1.8 metre** geriye monte edilir.
-* **Yükseklik:** İneğin sırt hizasının yaklaşık **20 – 30 cm** üzerine (yerden ~1.5 metre).
+```
+                  Kamera (IP65 Kutu - 2.8m Yükseklik)
+                  [==============================]
+                               /  │  \
+                              /   │   \  ~25° Eğim
+                             /    │    \
+                            ▼     ▼     ▼
+                        [Durak 1] [Durak 2] [Durak 3]
+                        (İnek 1)  (İnek 2)  (İnek 3)
+```
+
+#### 3.2. Tek İnek Bireysel İzleme Montajı
+* **Mesafe:** İneğin kuyruk sokumundan (pelvis) **$1.2\text{ m} - 1.8\text{ m}$** geriye.
+* **Yükseklik:** İneğin sırt hizasının yaklaşık **$20 - 30\text{ cm}$** üzerine (yerden ~$1.5\text{ m}$).
 * **Eğim Açısı:** Aşağıya doğru **$15^\circ - 20^\circ$** açıyla kuyruk kökü ve vulvayı tam karşıdan görecek şekilde ayarlanır.
-
-```
-       Kamera (IP65 Kutu)
-       [======] 
-            \
-             \ ~15° Eğim
-              \
-               ▼
-           (P_spine)
-               │
-         (P_tailbase) ◄── Kuyruk Kökü
-               │
-           (P_vulva)  ◄── Vulva Merkezi
-               │
-          (P_tailmid) ◄── Kuyruk Gövdesi
-```
