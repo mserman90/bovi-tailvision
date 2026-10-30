@@ -1,0 +1,17 @@
+# Ultralytics YOLO Pose Dataset Specification: Bovi-TailVision
+path: ./dataset # Veri kümesi kök dizini
+train: images/train
+val: images/val
+test: images/test
+
+# Anahtar Nokta (Keypoint) Tanımları:
+# 4 keypoint: [x, y, visibility]
+# 0: spine (sakrum / omurga eksen referansı)
+# 1: tailbase (kuyruk sokumu / kökü)
+# 2: tailmid (kuyruğun orta eklemi / gövdesi)
+# 3: vulva (vulva anatomik merkezi)
+kpt_shape: [4, 3] # [kuyruk_anahtar_sayısı, (x, y, görünürlük)]
+flip_idx: [0, 1, 2, 3]
+
+names:
+  0: cow_rear

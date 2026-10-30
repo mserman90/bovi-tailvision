@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_farmer">#FF1B5E20</color>
+    <color name="primary_farmer_dark">#FF0D3C10</color>
+    <color name="accent_farmer">#FF2E7D32</color>
+    <color name="alert_red">#FFD32F2F</color>
+    <color name="alert_amber">#FFF57C00</color>
+    <color name="bg_light">#FFF6F8F6</color>
+    <color name="card_bg">#FFFFFFFF</color>
+    <color name="text_primary">#FF212121</color>
+    <color name="text_secondary">#FF757575</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

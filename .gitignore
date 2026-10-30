@@ -1,0 +1,21 @@
+# Gradle & Android
+.gradle/
+build/
+app/build/
+farmer_app/build/
+*.iml
+.idea/
+local.properties
+.DS_Store
+
+# Python & AI
+__pycache__/
+*.py[cod]
+*$py.class
+*.pt
+bovi_tail_runs/
+dataset/
+*.csv
+
+# OS
+Thumbs.db

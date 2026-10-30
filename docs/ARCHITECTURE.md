@@ -1,0 +1,70 @@
+# BOVI-TAILVISION: SİSTEM MİMARİSİ VE TEKNİK TASARIM DOKÜMANI
+
+---
+
+### 1. GENEL MİMARİ
+
+Bovi-TailVision, eski nesil akıllı telefonların işlemci ve kamera donanımını kullanarak sığır kızgınlık (östrus) dönemlerini kuyruk kinematik sapmaları ve vulva açığa çıkma metrikleriyle tespit eden uç nokta (Edge Computing) yazılımıdır.
+
+```mermaid
+flowchart TD
+    subgraph EdgeDevice ["Ahırdaki Eski Android (Uç Nokta Kamera)"]
+        Cam[Kamera Donanımı 15 FPS] --> Pre[Zero-Alloc Preprocessor]
+        Pre --> TFLite[YOLO11n-Pose INT8 TFLite]
+        TFLite --> Kine[KinematicsEngine: Açı & Sapma]
+        Kine --> Filter[TemporalMovementFilter: Dışkılama & Sinek]
+        Filter --> Win[5 Dakikalık Kayan Pencere]
+        Win --> Decision{R_open >= %65?}
+        Decision -- Evet --> Alert[Estrus Alert Payload]
+        Decision -- Hayır --> Telemetry[5dk Periyodik Telemetri]
+    end
+
+    subgraph FarmServer ["Ahır Yerel Sunucusu (MQTT Broker)"]
+        Broker[Mosquitto MQTT Broker]
+        Bridge[Farm Dashboard & Push Bridge]
+        DB[(estrus_alerts.csv)]
+    end
+
+    subgraph FarmerMobile ["Çiftçinin Cep Telefonu (Bovi-Farmer App)"]
+        Listener[FarmerAlertListenerService]
+        Siren[Sesli Siren & Titreşim Alarmı]
+        UI[FarmerMainActivity: Tohumlama Zamanlayıcısı]
+        Telegram[Yedek Kanal: Telegram/SMS]
+    end
+
+    Alert -->|QoS 2: farm/tailvision/COW_ID/estrus_alert| Broker
+    Telemetry -->|QoS 1: farm/tailvision/COW_ID/telemetry| Broker
+    Broker --> Bridge
+    Bridge --> DB
+    Bridge -.->|Yedek Bildirim| Telegram
+
+    Broker -->|Canlı Push| Listener
+    Listener --> Siren
+    Listener --> UI
+```
+
+---
+
+### 2. MATEMATİKSEL KİNEMATİK VE FİLTRELEME PRENSİPLERİ
+
+#### 2.1. Vektörel Açı Hesabı
+* **Kuyruk Vektörü:** $\vec{V}_{\text{tail}} = (x_{\text{mid}} - x_{\text{base}}, y_{\text{mid}} - y_{\text{base}})$
+* **Referans Vektörü:** $\vec{V}_{\text{ref}} = (x_{\text{base}} - x_{\text{spine}}, y_{\text{base}} - y_{\text{spine}})$
+* **Sapma Açısı ($\theta$):**
+  $$\theta = \arccos\left(\frac{\vec{V}_{\text{tail}} \cdot \vec{V}_{\text{ref}}}{\|\vec{V}_{\text{tail}}\| \|\vec{V}_{\text{ref}}\|}\right) \times \frac{180^\circ}{\pi}$$
+* Sağa/Sola yön tayini 2B çapraz çarpım (Cross Product Z) işareti ile belirlenir:
+  $$\text{Cross}_z = V_{\text{ref}, x} \cdot V_{\text{tail}, y} - V_{\text{ref}, y} \cdot V_{\text{tail}, x}$$
+
+#### 2.2. Gürültü Filtreleme Durum Makinesi (State Machine)
+* **Dışkılama / İdrar:** Kuyruğun kökten dikleştiği ($y_{\text{base}} - y_{\text{mid}} > 25\text{ px}$) ve yatay sapmanın düşük olduğu ($|\theta| < 15^\circ$) durumlarda tetiklenir. $15$ saniyeden kısa süren bu durumlar kızgınlık sayacına dahil edilmez.
+* **Sinek Savurma:** Açığa çıkma süresi $< 0.3$ saniye olan mikro titreşimler filtrelenir; yalnızca $\ge 1.5$ saniye boyunca kalıcı olan vulva açığa çıkışları geçerli kabul edilir.
+
+---
+
+### 3. BELLEK VE TERMAL YÖNETİM (ZERO-ALLOCATION)
+
+Eski Snapdragon/Exynos yongalarında Garbage Collection (GC) gecikmelerini ve termal aşırı ısınmayı önlemek amacıyla:
+1. `ByteBuffer.allocateDirect(1 * 320 * 320 * 3)` tek seferlik başlatılır ve her karede `rewind()` ile yeniden yazılır.
+2. Kamera çözünürlüğü $320 \times 320$ seviyesine sabitlenir.
+3. Ekran parlaklığı `0.0f` yapılarak OLED/LCD panellerin gereksiz güç harcaması ve ısı üretimi engellenir.
+4. `ProcessCameraProvider` doğrudan `LifecycleService` arka plan servisine bağlanarak Activity kapanmalarında bile kamera akışının kesintisiz sürmesi sağlanır.
