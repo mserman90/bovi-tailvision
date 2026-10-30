@@ -50,7 +50,6 @@ class EstrusDetectionService : LifecycleService() {
 
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        const val EXTRA_COW_ID = "EXTRA_COW_ID"
         const val EXTRA_BROKER_URI = "EXTRA_BROKER_URI"
     }
 
@@ -67,12 +66,11 @@ class EstrusDetectionService : LifecycleService() {
     private var mqttManager: MqttManager? = null
     private lateinit var healthMonitor: DeviceHealthMonitor
 
-    private var cowId = "TR-06-3842"
     private var brokerUri = "tcp://192.168.1.100:1883"
     private var deviceId = "DEVICE_" + Build.SERIAL.take(6)
 
-    private var lastMetrics: BoviTailAnalyzer.AnalysisMetrics? = null
-    var onMetricsUpdated: ((BoviTailAnalyzer.AnalysisMetrics) -> Unit)? = null
+    private var lastGroupMetrics: BoviTailAnalyzer.GroupAnalysisMetrics? = null
+    var onGroupMetricsUpdated: ((BoviTailAnalyzer.GroupAnalysisMetrics) -> Unit)? = null
     var previewSurfaceProvider: Preview.SurfaceProvider? = null
 
     private var telemetryJob: Job? = null
@@ -88,9 +86,8 @@ class EstrusDetectionService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         when (intent?.action) {
             ACTION_START -> {
-                cowId = intent.getStringExtra(EXTRA_COW_ID) ?: cowId
                 brokerUri = intent.getStringExtra(EXTRA_BROKER_URI) ?: brokerUri
-                startForeground(NOTIFICATION_ID, buildForegroundNotification("Sistem Başlatılıyor..."))
+                startForeground(NOTIFICATION_ID, buildForegroundNotification("Grup İzleme Başlatılıyor..."))
                 initializeEdgeSystem()
             }
             ACTION_STOP -> {
@@ -148,7 +145,7 @@ class EstrusDetectionService : LifecycleService() {
             )
 
             val options = Interpreter.Options().apply {
-                setNumThreads(2) // 2 CPU çekirdeği (aşırı ısınmayı önlemek için)
+                setNumThreads(2)
                 try {
                     nnApiDelegate = NnApiDelegate()
                     addDelegate(nnApiDelegate)
@@ -175,15 +172,17 @@ class EstrusDetectionService : LifecycleService() {
 
                 val interpreter = tfliteInterpreter ?: return@addListener
 
+                // 4 İnekli Grup Analizörü
                 val analyzer = BoviTailAnalyzer(
                     tflite = interpreter,
                     targetFps = 15,
-                    onFrameAnalyzed = { metrics ->
-                        lastMetrics = metrics
-                        onMetricsUpdated?.invoke(metrics)
+                    maxCows = 4,
+                    onGroupMetricsAnalyzed = { groupMetrics ->
+                        lastGroupMetrics = groupMetrics
+                        onGroupMetricsUpdated?.invoke(groupMetrics)
                     },
-                    onEstrusAlertTriggered = { rate, duration ->
-                        triggerEstrusAlert(rate, duration)
+                    onEstrusAlertTriggered = { stallId, cowId, rate, duration ->
+                        triggerEstrusAlert(stallId, cowId, rate, duration)
                     }
                 )
 
@@ -197,7 +196,7 @@ class EstrusDetectionService : LifecycleService() {
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
 
-                updateNotification("Kamera Aktif: $cowId izleniyor")
+                updateNotification("Grup Kamera Aktif: 4 Durak İzleniyor")
             } catch (e: Exception) {
                 Log.e(TAG, "CameraX bağlama hatası: ${e.message}")
             }
@@ -209,32 +208,34 @@ class EstrusDetectionService : LifecycleService() {
         telemetryJob = lifecycleScope.launch(Dispatchers.IO) {
             while (isActive) {
                 delay(5 * 60 * 1000) // 5 dakikada bir telemetri
-                lastMetrics?.let { m ->
-                    val payload = TelemetryPayload(
-                        deviceId = deviceId,
-                        cowId = cowId,
-                        timestamp = System.currentTimeMillis() / 1000,
-                        metrics = MetricsData(
-                            fps = m.fps,
-                            tailAngleDeg = m.tailAngleDeg,
-                            exposureRatePct = m.exposureRatePct,
-                            exposureDurationSec = m.totalExposedSec,
-                            defecationEventsFiltered = m.defecationCount,
-                            flySwatEventsFiltered = m.flySwatCount
-                        ),
-                        health = HealthData(
-                            cpuTempC = healthMonitor.getCpuTemperature(),
-                            ramFreeMb = healthMonitor.getFreeRamMb(),
-                            batteryPct = healthMonitor.getBatteryPercentage()
+                lastGroupMetrics?.let { gm ->
+                    for (cow in gm.cows) {
+                        val payload = TelemetryPayload(
+                            deviceId = deviceId,
+                            cowId = cow.cowId,
+                            timestamp = System.currentTimeMillis() / 1000,
+                            metrics = MetricsData(
+                                fps = gm.fps,
+                                tailAngleDeg = cow.kinematics.tailAngleDeg,
+                                exposureRatePct = cow.exposureRatePct,
+                                exposureDurationSec = cow.totalExposedSec,
+                                defecationEventsFiltered = 0,
+                                flySwatEventsFiltered = 0
+                            ),
+                            health = HealthData(
+                                cpuTempC = healthMonitor.getCpuTemperature(),
+                                ramFreeMb = healthMonitor.getFreeRamMb(),
+                                batteryPct = healthMonitor.getBatteryPercentage()
+                            )
                         )
-                    )
-                    mqttManager?.publishTelemetry(cowId, payload)
+                        mqttManager?.publishTelemetry(cow.cowId, payload)
+                    }
                 }
             }
         }
     }
 
-    private fun triggerEstrusAlert(exposureRate: Double, totalExposedSec: Double) {
+    private fun triggerEstrusAlert(stallId: Int, cowId: String, exposureRate: Double, totalExposedSec: Double) {
         val alert = EstrusAlertPayload(
             alertId = "ALT-" + UUID.randomUUID().toString().take(8),
             deviceId = deviceId,
@@ -243,10 +244,10 @@ class EstrusDetectionService : LifecycleService() {
             confidenceScore = (exposureRate / 100.0).coerceAtMost(0.99),
             exposureRate5min = exposureRate,
             totalExposedDurationSec = totalExposedSec,
-            actionRequired = "Tohumlama Penceresi: 12-18 Saat İçi (AM/PM Kuralı)"
+            actionRequired = "Durak ${stallId + 1} ($cowId) - Tohumlama Penceresi: 12-18 Saat İçi (AM/PM Kuralı)"
         )
         mqttManager?.publishAlert(cowId, alert)
-        updateNotification("KIZGINLIK ALARMI! (%${String.format("%.1f", exposureRate)})")
+        updateNotification("KIZGINLIK ALARMI! Durak ${stallId + 1} ($cowId: %${String.format("%.1f", exposureRate)})")
     }
 
     private fun createNotificationChannel() {
@@ -270,7 +271,7 @@ class EstrusDetectionService : LifecycleService() {
             PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Bovi-TailVision Edge AI")
+            .setContentTitle("Bovi-TailVision Grup İzleme")
             .setContentText(contentText)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

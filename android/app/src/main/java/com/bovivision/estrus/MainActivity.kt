@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
             detectionService = binder.getService()
             isServiceBound = true
 
-            // UI Metrik Güncellemelerini Dinle
-            detectionService?.onMetricsUpdated = { metrics ->
+            // Grup Analiz Metriklerini Dinle
+            detectionService?.onGroupMetricsUpdated = { groupMetrics ->
                 runOnUiThread {
-                    updateUiMetrics(metrics)
+                    updateGroupUiMetrics(groupMetrics)
                 }
             }
 
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Ekranın kapanmasını engelle (Kamera akışının durmaması için)
+        // Ekranın kapanmasını engelle
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         setupListeners()
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnTogglePreview.setOnClickListener {
             if (binding.previewView.visibility == View.VISIBLE) {
                 binding.previewView.visibility = View.GONE
-                binding.btnTogglePreview.text = "Montaj / Kamera Önizleme"
+                binding.btnTogglePreview.text = "Grup Önizlemeyi Aç"
             } else {
                 binding.previewView.visibility = View.VISIBLE
                 binding.btnTogglePreview.text = "Önizlemeyi Gizle"
@@ -100,7 +100,6 @@ class MainActivity : AppCompatActivity() {
             activateBlackScreenMode()
         }
 
-        // Çift tıklama ile siyah ekrandan çıkma dedektörü
         val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 deactivateBlackScreenMode()
@@ -132,12 +131,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startDetectionService() {
-        val cowId = binding.etCowId.text.toString().trim().ifEmpty { "TR-06-3842" }
         val broker = binding.etBrokerIp.text.toString().trim().ifEmpty { "tcp://192.168.1.100:1883" }
 
         val intent = Intent(this, EstrusDetectionService::class.java).apply {
             action = EstrusDetectionService.ACTION_START
-            putExtra(EstrusDetectionService.EXTRA_COW_ID, cowId)
             putExtra(EstrusDetectionService.EXTRA_BROKER_URI, broker)
         }
 
@@ -151,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         isRunning = true
         binding.btnToggleService.text = getString(R.string.btn_stop)
         binding.btnToggleService.setBackgroundColor(Color.parseColor("#C62828"))
-        binding.tvDeviceStatus.text = getString(R.string.status_running)
+        binding.tvDeviceStatus.text = "Grup Analizi Aktif (4 Durak İzleniyor)"
     }
 
     private fun stopDetectionService() {
@@ -169,39 +166,41 @@ class MainActivity : AppCompatActivity() {
         binding.tvDeviceStatus.text = getString(R.string.status_standby)
     }
 
-    private fun updateUiMetrics(m: com.bovivision.estrus.analyzer.BoviTailAnalyzer.AnalysisMetrics) {
-        binding.tvLiveAngle.text = String.format("Kuyruk Açısı: %.1f°", m.tailAngleDeg)
-        binding.tvLiveFps.text = String.format("Kare Hızı: %.1f FPS", m.fps)
-        binding.tvExposureRate.text = String.format("Açık Kalma (5dk): %%%.1f", m.exposureRatePct)
-        binding.tvExposureTime.text = String.format("Açık Süre: %.1f sn", m.totalExposedSec)
+    private fun updateGroupUiMetrics(gm: com.bovivision.estrus.analyzer.BoviTailAnalyzer.GroupAnalysisMetrics) {
+        binding.tvLiveFps.text = String.format("Kare Hızı: %.1f FPS", gm.fps)
 
-        if (m.exposureRatePct >= 65.0) {
+        if (gm.activeEstrusCount > 0) {
+            val inHeat = gm.cows.filter { it.isEstrus }.joinToString(", ") { "D${it.stallId + 1}: ${it.cowId}" }
             binding.tvEstrusAlertBadge.apply {
-                text = "KIZGINLIK ALARMI! (ÖSTRUS TESPİT EDİLDİ)"
-                setBackgroundColor(Color.parseColor("#D32F2F")) // Kırmızı
+                text = "🚨 KIZGINLIK TESPİT EDİLDİ! ($inHeat)"
+                setBackgroundColor(Color.parseColor("#D32F2F"))
             }
         } else {
             binding.tvEstrusAlertBadge.apply {
-                text = "DURUM: NORMAL (DİÖSTRUS / ANÖSTRUS)"
-                setBackgroundColor(Color.parseColor("#1B5E20")) // Yeşil
+                text = "DURUM: GRUP NORMAL (${gm.cows.size} İnek İzleniyor)"
+                setBackgroundColor(Color.parseColor("#1B5E20"))
             }
         }
+
+        // Özet metrikler (İlk inek veya en aktif inek)
+        val primary = gm.cows.maxByOrNull { it.exposureRatePct } ?: return
+        binding.tvLiveAngle.text = String.format("Kuyruk Açısı (D%d): %.1f°", primary.stallId + 1, primary.kinematics.tailAngleDeg)
+        binding.tvExposureRate.text = String.format("Maks Açık Kalma: %%%.1f (%s)", primary.exposureRatePct, primary.cowId)
+        binding.tvExposureTime.text = String.format("Açık Süre: %.1f sn", primary.totalExposedSec)
     }
 
     private fun activateBlackScreenMode() {
         isBlackScreenActive = true
         binding.blackOverlayView.visibility = View.VISIBLE
-        // Ekran parlaklığını sıfıra indir (Termal koruma ve güç tasarrufu)
         val lp = window.attributes
         lp.screenBrightness = 0.0f
         window.attributes = lp
-        Toast.makeText(this, "Termal Koruma Aktif. Çıkmak için ekrana çift tıklayın.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Termal Koruma Aktif (Grup İzleniyor). Çıkmak için çift tıklayın.", Toast.LENGTH_SHORT).show()
     }
 
     private fun deactivateBlackScreenMode() {
         isBlackScreenActive = false
         binding.blackOverlayView.visibility = View.GONE
-        // Parlaklığı varsayılana döndür
         val lp = window.attributes
         lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
         window.attributes = lp

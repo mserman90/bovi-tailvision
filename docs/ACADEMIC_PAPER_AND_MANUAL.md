@@ -61,9 +61,12 @@ $$E(k) = \begin{cases} 1, & |\theta_{\text{signed}}| \ge 20^\circ \land D_{\text
 $$R_{\text{open}} = \left( \frac{1}{N} \sum_{k=1}^{N} E(k) \right) \times 100 \quad [\%]$$
 $$T_{\text{exp}} = \sum_{k=1}^{N} \frac{E(k)}{\text{FPS}} \quad [\text{saniye}]$$
 
-### 2.4. Sahte Hareketlerin (Gürültü) Ayıklanması
-1. **Dışkılama/İdrar Filtresi:** İnek dışkılama sırasında kuyruğunu yukarı kaldırır ($y_0 - y_1 > 25\text{ px}$), ancak yatay sapma minimaldir ($|\theta| < 15^\circ$). Bu durum tespit edildiğinde ve süresi $< 15$ saniye ise $E(k) = 0$ atanır ve östrus sayacı kilitlenir.
-2. **Sinek Kovma / Refleks Filtresi:** Sinek ısırması sonucu anlık çırpmalar yüksek frekanslı salınımlardır ($t < 0.3\text{ sn}$). Yalnızca kesintisiz olarak en az $1.5\text{ saniye}$ ($22\text{ kare} @ 15\text{ FPS}$) süren vulva açığa çıkışları kabul edilir.
+### 2.5. Çoklu Sığır ve Grup Takip Mekanizması (Multi-Instance Association)
+Serbest duraklı veya bağlı ahırlarda, tek bir geniş açılı kamera $M$ adet ineği ($M \in [2, 6]$) aynı görüş alanında kapsar.
+1. **Uzamsal Durak Yuvaları (Spatial Stall Slotting):** Görüntü genişliği $W$, durak adedine bölünerek uzamsal sütunlar ($\text{Slot}_i = [i \cdot \frac{W}{M}, (i+1) \cdot \frac{W}{M}]$) tanımlanır.
+2. **Kesişim ve Merkez Ataması:** Her $j$. inek tespiti, pelvis merkez koordinatı $x_c^j$'nin düştüğü durak indeksine atanır:
+   $$\text{Stall}(j) = \left\lfloor \frac{x_c^j}{W / M} \right\rfloor$$
+3. **Bağımsız Durum Makineleri:** Her durak kendi bağımsız kayan penceresine ($R_{\text{open}}^i$) ve gürültü filtresine sahiptir. Bir ineğin dışkılaması veya kuyruk çırpması, komşu duraktaki hayvanın kızgınlık indeksini etkilemez.
 
 ---
 

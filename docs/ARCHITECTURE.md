@@ -2,21 +2,26 @@
 
 ---
 
-### 1. GENEL MİMARİ
+### 1. GENEL MİMARİ VE ÇOKLU İNEK (GRUP) TAKİBİ
 
-Bovi-TailVision, eski nesil akıllı telefonların işlemci ve kamera donanımını kullanarak sığır kızgınlık (östrus) dönemlerini kuyruk kinematik sapmaları ve vulva açığa çıkma metrikleriyle tespit eden uç nokta (Edge Computing) yazılımıdır.
+Bovi-TailVision, tek bir eski model Android telefonun geniş açılı kamerasıyla ahırdaki bir grup ineği (3-6 durak / yemlik kilit sırası) aynı anda izleyebilir. Derin öğrenme çıkarımı (`YOLO11n-pose INT8`) kare başına **tek bir geçişte (Single Inference Pass)** tüm ineklerin iskeletlerini tespit eder; ardından uzamsal durak eşleme motoru (`MultiCowTracker`) her hayvanı kendi durağına zimmetler.
 
 ```mermaid
 flowchart TD
-    subgraph EdgeDevice ["Ahırdaki Eski Android (Uç Nokta Kamera)"]
-        Cam[Kamera Donanımı 15 FPS] --> Pre[Zero-Alloc Preprocessor]
-        Pre --> TFLite[YOLO11n-Pose INT8 TFLite]
-        TFLite --> Kine[KinematicsEngine: Açı & Sapma]
-        Kine --> Filter[TemporalMovementFilter: Dışkılama & Sinek]
-        Filter --> Win[5 Dakikalık Kayan Pencere]
-        Win --> Decision{R_open >= %65?}
-        Decision -- Evet --> Alert[Estrus Alert Payload]
-        Decision -- Hayır --> Telemetry[5dk Periyodik Telemetri]
+    subgraph EdgeDevice ["Ahırdaki Geniş Açı Kamera (Grup İzleme)"]
+        Cam[Kamera Donanımı 15 FPS - Geniş Açı] --> Pre[Zero-Alloc Preprocessor]
+        Pre --> TFLite[YOLO11n-Pose INT8: Çoklu Tespit]
+        TFLite --> MOT[MultiCowTracker: Uzamsal Durak Eşleme]
+        
+        MOT --> Cow1[İnek 1 - Durak 1: Kayan Pencere]
+        MOT --> Cow2[İnek 2 - Durak 2: Kayan Pencere]
+        MOT --> Cow3[İnek 3 - Durak 3: Kayan Pencere]
+        
+        Cow1 --> Filter1[Dışkılama & Sinek Filtresi]
+        Cow2 --> Filter2[Dışkılama & Sinek Filtresi]
+        Cow3 --> Filter3[Dışkılama & Sinek Filtresi]
+
+        Filter2 -- R_open >= %65 --> Alert[Kızgınlık Alarmı: Durak 2]
     end
 
     subgraph FarmServer ["Ahır Yerel Sunucusu (MQTT Broker)"]
@@ -28,16 +33,12 @@ flowchart TD
     subgraph FarmerMobile ["Çiftçinin Cep Telefonu (Bovi-Farmer App)"]
         Listener[FarmerAlertListenerService]
         Siren[Sesli Siren & Titreşim Alarmı]
-        UI[FarmerMainActivity: Tohumlama Zamanlayıcısı]
-        Telegram[Yedek Kanal: Telegram/SMS]
+        UI[FarmerMainActivity: Durak 2 İzolasyonu & AM/PM]
     end
 
     Alert -->|QoS 2: farm/tailvision/COW_ID/estrus_alert| Broker
-    Telemetry -->|QoS 1: farm/tailvision/COW_ID/telemetry| Broker
     Broker --> Bridge
     Bridge --> DB
-    Bridge -.->|Yedek Bildirim| Telegram
-
     Broker -->|Canlı Push| Listener
     Listener --> Siren
     Listener --> UI

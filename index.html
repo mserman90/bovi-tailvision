@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bovi-TailVision & Bovi-Farmer | İnteraktif Canlı Demo</title>
+    <title>Bovi-TailVision | Çoklu İnek (Grup) Kızgınlık Tespit Simülatörü</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,16 +15,12 @@
         .alarm-active {
             animation: pulse-red 1.2s infinite;
         }
-        .phone-frame {
-            border-radius: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 10px #1f2937;
-        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
 
     <!-- Header -->
-    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 shadow-md sticky top-0 z-50">
+    <header class="bg-slate-900 border-b border-slate-800 py-3.5 px-6 shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-900/50">
@@ -32,96 +28,127 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Bovi-TailVision <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">Edge AI Demo</span>
+                        Bovi-TailVision <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">Grup / Çoklu İnek Takip</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Eski Model Android Cihazlar İçin Görüntü İşleme Tabanlı Sığır Kızgınlık Tespit Sistemi</p>
+                    <p class="text-xs text-slate-400">Tek Kamerayla Bir Grup İneğin Eş Zamanlı Kızgınlık Takibi & Uç Birim Analizi</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    Sanal MQTT Broker Aktif
+                    Çoklu Uzamsal Takip (MOT) Aktif
                 </span>
                 <a href="ACADEMIC_PAPER_AND_MANUAL.md" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-book-bookmark text-emerald-400"></i> Akademik Makale & Kılavuz
+                    <i class="fa-solid fa-book-bookmark text-emerald-400"></i> Akademik Teori
                 </a>
             </div>
         </div>
     </header>
 
     <!-- Main Content: Dual Device Workspace -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        <!-- ================= DEVICE 1: BOVI-TAILVISION (CAMERA EDGE STATION) ================= -->
-        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl relative">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+        <!-- ================= DEVICE 1: BOVI-TAILVISION (GROUP CAMERA) ================= -->
+        <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl relative">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20"><i class="fa-solid fa-camera"></i></span>
                     <div>
-                        <h2 class="font-bold text-white text-base">Cihaz 1: Bovi-TailVision (Ahırdaki Kamera)</h2>
-                        <p class="text-xs text-slate-400">Eski Model Android (Kaudal Pelvis Açısı)</p>
+                        <h2 class="font-bold text-white text-base">Cihaz 1: Ahırdaki Geniş Açı Kamera (Grup İzleme)</h2>
+                        <p class="text-xs text-slate-400">Yemlik/Durak Sırası (3 İnek Eş Zamanlı İzleniyor)</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/60" id="fpsDisplay">15.0 FPS</span>
+                    <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/60">15.0 FPS</span>
                     <p class="text-[10px] text-slate-500 mt-0.5">YOLO11n-Pose INT8</p>
                 </div>
             </div>
 
-            <!-- Canvas View (Cow Rear Simulation) -->
-            <div class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 aspect-square max-w-[420px] mx-auto shadow-inner">
-                <canvas id="cowCanvas" width="420" height="420" class="w-full h-full block"></canvas>
+            <!-- Panoramic Canvas View (3 Adjacent Cow Stalls) -->
+            <div class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 aspect-[16/10] w-full shadow-inner">
+                <canvas id="groupCanvas" width="640" height="400" class="w-full h-full block"></canvas>
 
                 <!-- Black Screen Overlay for Thermal Mode -->
                 <div id="blackScreenOverlay" class="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center cursor-pointer hidden select-none z-30">
                     <i class="fa-solid fa-moon text-slate-700 text-4xl mb-3"></i>
                     <p class="text-xs text-slate-500 font-mono">TERMAL KORUMA AKTİF (PARLAKLIK: 0.0f)</p>
-                    <p class="text-[11px] text-slate-600 mt-1">Uyanmak için ekrana çift tıklayın</p>
+                    <p class="text-[11px] text-slate-600 mt-1">Grup analizi arka planda sürüyor • Uyanmak için çift tıklayın</p>
                 </div>
 
-                <!-- HUD Overlays -->
-                <div class="absolute top-2 left-2 pointer-events-none flex flex-col gap-1 text-[11px] font-mono text-white/90 bg-black/60 backdrop-blur-sm p-2 rounded-lg border border-white/10">
-                    <div>İnek: <span class="text-emerald-400 font-bold">TR-06-3842</span></div>
-                    <div>Açı (θ): <span id="hudAngle" class="text-amber-400 font-bold">0.0°</span></div>
-                    <div>Durum: <span id="hudVulvaStatus" class="text-blue-300">Nötr (Kapalı)</span></div>
-                    <div>Vulva Açık (5dk): <span id="hudExposureRate" class="text-emerald-400 font-bold">%9.4</span></div>
+                <!-- Live HUD Badge -->
+                <div class="absolute top-2 left-2 pointer-events-none flex items-center gap-2 text-[11px] font-mono text-white/90 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Kapsama: <strong class="text-emerald-400">3 Durak (Bağlı Ahır)</strong></span>
                 </div>
 
-                <div class="absolute bottom-2 right-2 pointer-events-none text-[10px] font-mono text-slate-400 bg-black/60 backdrop-blur-sm p-1.5 rounded border border-white/10">
-                    CPU: <span id="hudCpuTemp" class="text-slate-200">41.2°C</span> | RAM: <span class="text-slate-200">412 MB Boş</span>
+                <div class="absolute bottom-2 right-2 pointer-events-none text-[10px] font-mono text-slate-400 bg-black/70 backdrop-blur-sm p-1.5 rounded border border-white/10">
+                    İşlemci: <span class="text-slate-200">42.1°C</span> | Boş RAM: <span class="text-slate-200">388 MB</span>
                 </div>
             </div>
 
-            <!-- Simulation Controls -->
-            <div class="mt-5 space-y-3">
+            <!-- Multi-Cow Live Status Cards Under Camera -->
+            <div class="grid grid-cols-3 gap-2.5 mt-3">
+                <!-- Cow 1 Status -->
+                <div id="cardCow1" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs transition">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-white">DURAK 1</span>
+                        <span id="badgeCow1" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">TR-06-3841</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">Açı: <span id="angleCow1" class="text-slate-200 font-mono">0.0°</span></div>
+                    <div class="text-[11px] text-slate-400">Açık: <span id="rateCow1" class="text-emerald-400 font-mono">%8.2</span></div>
+                </div>
+
+                <!-- Cow 2 Status -->
+                <div id="cardCow2" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs transition">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-white">DURAK 2</span>
+                        <span id="badgeCow2" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">TR-06-3842</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">Açı: <span id="angleCow2" class="text-slate-200 font-mono">0.0°</span></div>
+                    <div class="text-[11px] text-slate-400">Açık: <span id="rateCow2" class="text-emerald-400 font-mono">%9.5</span></div>
+                </div>
+
+                <!-- Cow 3 Status -->
+                <div id="cardCow3" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs transition">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-white">DURAK 3</span>
+                        <span id="badgeCow3" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">TR-06-3843</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400">Açı: <span id="angleCow3" class="text-slate-200 font-mono">0.0°</span></div>
+                    <div class="text-[11px] text-slate-400">Açık: <span id="rateCow3" class="text-emerald-400 font-mono">%7.8</span></div>
+                </div>
+            </div>
+
+            <!-- Group Simulation Controls -->
+            <div class="mt-4 space-y-2.5">
                 <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-                    <span>Davranış Simülatörü:</span>
-                    <span id="activeScenarioLabel" class="text-emerald-400 font-bold">Normal (Diöstrus)</span>
+                    <span>Grup Davranış Senaryoları:</span>
+                    <span id="activeScenarioLabel" class="text-emerald-400 font-bold">Tüm Grup Sakin (Diöstrus)</span>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <button onclick="setScenario('normal')" id="btnScenarioNormal" class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white shadow-lg transition hover:bg-emerald-500 border border-emerald-400/30">
-                        <i class="fa-solid fa-check mr-1"></i> Normal
+                    <button onclick="setGroupScenario('all_normal')" id="btnAllNormal" class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white shadow-lg transition hover:bg-emerald-500 border border-emerald-400/30">
+                        <i class="fa-solid fa-users mr-1"></i> Tüm Grup Normal
                     </button>
-                    <button onclick="setScenario('fly')" id="btnScenarioFly" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition border border-slate-700">
-                        <i class="fa-solid fa-bug mr-1"></i> Sinek Çırpma
+                    <button onclick="setGroupScenario('cow2_estrus')" id="btnCow2Estrus" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-red-400 hover:bg-red-950/40 transition border border-red-900/50">
+                        <i class="fa-solid fa-fire mr-1"></i> İnek 2 Kızgınlıkta!
                     </button>
-                    <button onclick="setScenario('defecation')" id="btnScenarioDefecation" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition border border-slate-700">
-                        <i class="fa-solid fa-arrow-up mr-1"></i> Dışkılama
+                    <button onclick="setGroupScenario('cow1_defecation')" id="btnCow1Def" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-amber-400 hover:bg-amber-950/40 transition border border-amber-900/50">
+                        <i class="fa-solid fa-arrow-up mr-1"></i> İnek 1 Dışkılama
                     </button>
-                    <button onclick="setScenario('estrus')" id="btnScenarioEstrus" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-red-400 hover:bg-red-950/40 transition border border-red-900/50">
-                        <i class="fa-solid fa-fire mr-1"></i> Kızgınlık!
+                    <button onclick="setGroupScenario('cow3_fly')" id="btnCow3Fly" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-blue-400 hover:bg-blue-950/40 transition border border-blue-900/50">
+                        <i class="fa-solid fa-bug mr-1"></i> İnek 3 Sinek Çırpma
                     </button>
                 </div>
 
-                <!-- Action Filter Log -->
-                <div id="filterLogBox" class="text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 font-mono flex items-center justify-between">
-                    <span class="flex items-center gap-1.5">
+                <!-- Action Log & Thermal Switch -->
+                <div class="text-xs p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 font-mono flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 truncate">
                         <i class="fa-solid fa-filter text-slate-500"></i>
-                        <span id="filterLogText">Filtre: Normal kuyruk hareketi izleniyor.</span>
+                        <span id="filterLogText">MOT Filtresi: 3 duraktaki hayvanların kuyruk eksenleri ayrıştırıldı.</span>
                     </span>
-                    <button onclick="toggleThermalMode()" class="text-slate-400 hover:text-amber-400 transition" title="Termal Ekran Karartma">
+                    <button onclick="toggleThermalMode()" class="text-slate-400 hover:text-amber-400 transition ml-2 flex-shrink-0" title="Termal Ekran Karartma">
                         <i class="fa-solid fa-moon"></i> Karart
                     </button>
                 </div>
@@ -130,29 +157,27 @@
 
 
         <!-- ================= DEVICE 2: BOVI-FARMER (FARMER'S PHONE) ================= -->
-        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl relative">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+        <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl relative">
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-mobile-screen"></i></span>
                     <div>
-                        <h2 class="font-bold text-white text-base">Cihaz 2: Bovi-Farmer (Çiftçinin Cep Telefonu)</h2>
-                        <p class="text-xs text-slate-400">Canlı Alarm & Tohumlama Zamanlayıcısı</p>
+                        <h2 class="font-bold text-white text-base">Cihaz 2: Bovi-Farmer (Çiftçi Takip)</h2>
+                        <p class="text-xs text-slate-400">Ahır Grup Uyarı Paneli & AM/PM Tohumlama</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="testAlarmSound()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md border border-slate-700 transition" title="Siren sesini test et">
-                        <i class="fa-solid fa-volume-high text-amber-400"></i> Ses Testi
-                    </button>
-                </div>
+                <button onclick="testAlarmSound()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md border border-slate-700 transition">
+                    <i class="fa-solid fa-volume-high text-amber-400"></i> Ses Testi
+                </button>
             </div>
 
             <!-- Virtual Mobile Phone Display -->
-            <div id="farmerPhoneScreen" class="max-w-[360px] mx-auto bg-slate-950 rounded-[36px] border-4 border-slate-800 p-4 shadow-2xl min-h-[520px] flex flex-col justify-between transition-all duration-300">
+            <div id="farmerPhoneScreen" class="max-w-[340px] mx-auto bg-slate-950 rounded-[36px] border-4 border-slate-800 p-4 shadow-2xl min-h-[510px] flex flex-col justify-between transition-all duration-300">
 
                 <!-- Phone Top Bar -->
                 <div>
                     <div class="flex justify-between items-center text-[10px] text-slate-400 pb-2 border-b border-slate-800/80 mb-3">
-                        <span id="phoneClock">11:58</span>
+                        <span id="phoneClock">12:30</span>
                         <div class="flex items-center gap-1">
                             <i class="fa-solid fa-wifi text-emerald-400"></i>
                             <i class="fa-solid fa-signal"></i>
@@ -163,38 +188,45 @@
                     <!-- App Header Inside Phone -->
                     <div class="bg-emerald-900/40 border border-emerald-700/40 rounded-2xl p-3 mb-3">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-bold text-emerald-300 tracking-wide uppercase">Bovi-Farmer v1.0</h3>
+                            <h3 class="text-xs font-bold text-emerald-300 tracking-wide uppercase">Bovi-Farmer Sürü Takip</h3>
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </div>
-                        <p class="text-[11px] text-emerald-200/80 mt-0.5">Ahır MQTT Canlı Yayını: <span class="font-semibold text-white">Bağlı</span></p>
+                        <p class="text-[11px] text-emerald-200/80 mt-0.5">Ahır Grup 1: <span class="font-semibold text-white">3 İnek İzleniyor</span></p>
                     </div>
 
-                    <!-- Summary Stats inside Phone -->
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center">
-                            <div id="phoneAlertCount" class="text-xl font-bold text-red-400">0</div>
-                            <div class="text-[10px] text-slate-400 uppercase font-medium">Aktif Alarm</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center">
-                            <div id="phoneInseminationCount" class="text-xl font-bold text-amber-400">0</div>
-                            <div class="text-[10px] text-slate-400 uppercase font-medium">Tohumlama Planı</div>
+                    <!-- Herd Status Table inside phone -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 mb-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Durak Listesi:</div>
+                        <div class="space-y-1.5 text-xs font-mono">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-300">D1 (TR-06-3841):</span>
+                                <span id="phoneD1Status" class="text-emerald-400 font-bold">Normal</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-300">D2 (TR-06-3842):</span>
+                                <span id="phoneD2Status" class="text-emerald-400 font-bold">Normal</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-300">D3 (TR-06-3843):</span>
+                                <span id="phoneD3Status" class="text-emerald-400 font-bold">Normal</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Alert Cards Container -->
-                    <div id="alertsContainer" class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
-                        <!-- Empty State Default -->
-                        <div id="emptyAlertsState" class="text-center py-10 px-4 bg-slate-900/50 rounded-2xl border border-dashed border-slate-800">
-                            <i class="fa-solid fa-shield-cat text-slate-600 text-3xl mb-2"></i>
-                            <p class="text-xs text-slate-400 font-medium">Sürüde aktif kızgınlık uyarısı yok.</p>
-                            <p class="text-[10px] text-slate-500 mt-1">Sol taraftaki "Kızgınlık!" simülasyonunu başlatın.</p>
+                    <!-- Alerts Container -->
+                    <div id="alertsContainer" class="space-y-2.5 max-h-[250px] overflow-y-auto pr-1">
+                        <!-- Empty State -->
+                        <div id="emptyAlertsState" class="text-center py-8 px-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800">
+                            <i class="fa-solid fa-shield-cat text-slate-600 text-2xl mb-1.5"></i>
+                            <p class="text-xs text-slate-400 font-medium">Grupta aktif kızgınlık yok.</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Soldan "İnek 2 Kızgınlıkta" butonuna basın.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Phone Bottom Bar -->
-                <div class="pt-3 border-t border-slate-800 text-center">
-                    <p class="text-[10px] text-slate-500">Trimberger AM/PM Kuralı Otomatik Hesaplanır</p>
+                <div class="pt-2.5 border-t border-slate-800 text-center">
+                    <p class="text-[10px] text-slate-500">Çoklu Durak Eşleştirme & AM/PM Kuralı</p>
                 </div>
             </div>
         </section>
@@ -202,13 +234,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-500 mt-8">
-        <p>© 2026 Bovi-TailVision Projesi. Açık Kaynak Tarım Teknolojileri (AgTech) ve Edge AI Çözümü.</p>
+    <footer class="bg-slate-900 border-t border-slate-800 py-3.5 px-6 text-center text-xs text-slate-500 mt-6">
+        <p>© 2026 Bovi-TailVision Projesi. Eski Model Android Cihazlar İçin Çoklu Sığır Uç Birim (Edge AI) Sistemi.</p>
     </footer>
 
-    <!-- Audio Synth for Estrus Alarm Siren -->
+    <!-- Audio Synth for Alarm Siren -->
     <script>
-        // Web Audio Context for realistic siren sound
         let audioCtx = null;
         function playSiren() {
             try {
@@ -220,10 +251,9 @@
                 osc.type = 'sawtooth';
 
                 const now = audioCtx.currentTime;
-                // Beep beep alarm tone
-                osc.frequency.setValueAtTime(800, now);
-                osc.frequency.exponentialRampToValueAtTime(1400, now + 0.25);
-                osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
+                osc.frequency.setValueAtTime(850, now);
+                osc.frequency.exponentialRampToValueAtTime(1450, now + 0.25);
+                osc.frequency.exponentialRampToValueAtTime(850, now + 0.5);
 
                 gain.gain.setValueAtTime(0.15, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
@@ -234,7 +264,7 @@
                 osc.start(now);
                 osc.stop(now + 0.5);
             } catch (e) {
-                console.log("Audio not supported or blocked: " + e);
+                console.log("Audio not supported: " + e);
             }
         }
 
@@ -244,280 +274,321 @@
         }
     </script>
 
-    <!-- Simulation & Canvas Kinematics Logic -->
+    <!-- Multi-Cow Group Kinematics Simulation Logic -->
     <script>
-        const canvas = document.getElementById('cowCanvas');
+        const canvas = document.getElementById('groupCanvas');
         const ctx = canvas.getContext('2d');
 
-        let currentScenario = 'normal'; // 'normal', 'fly', 'defecation', 'estrus'
         let frameIndex = 0;
-        let sustainedExposedFrames = 0;
-        let windowExposedHistory = [];
-        const windowCapacity = 150; // Visual sliding window
+        let activeScenario = 'all_normal'; // 'all_normal', 'cow2_estrus', 'cow1_defecation', 'cow3_fly'
+        let alertFired = false;
 
-        // Mathematical keypoints state
-        let spine = { x: 210, y: 70 };
-        let tailBase = { x: 210, y: 130 };
-        let tailMid = { x: 210, y: 250 };
-        let vulva = { x: 210, y: 200 };
+        // 3 İnek Durak Yapılandırması (Kamera Görüş Açısı: 640 x 400)
+        const stalls = [
+            {
+                id: 0,
+                cowId: "TR-06-3841",
+                baseX: 110,
+                spine: { x: 110, y: 70 },
+                tailBase: { x: 110, y: 130 },
+                tailMid: { x: 110, y: 240 },
+                vulva: { x: 110, y: 195 },
+                angle: 0,
+                exposureHistory: [],
+                exposureRate: 8.2,
+                isEstrus: false
+            },
+            {
+                id: 1,
+                cowId: "TR-06-3842",
+                baseX: 320,
+                spine: { x: 320, y: 70 },
+                tailBase: { x: 320, y: 130 },
+                tailMid: { x: 320, y: 240 },
+                vulva: { x: 320, y: 195 },
+                angle: 0,
+                exposureHistory: [],
+                exposureRate: 9.5,
+                isEstrus: false
+            },
+            {
+                id: 2,
+                cowId: "TR-06-3843",
+                baseX: 530,
+                spine: { x: 530, y: 70 },
+                tailBase: { x: 530, y: 130 },
+                tailMid: { x: 530, y: 240 },
+                vulva: { x: 530, y: 195 },
+                angle: 0,
+                exposureHistory: [],
+                exposureRate: 7.8,
+                isEstrus: false
+            }
+        ];
 
-        let tailAngle = 0;
-        let exposureRate = 9.4;
-        let isVulvaClear = false;
-        let activeAlarmTriggered = false;
-
-        function setScenario(sc) {
-            currentScenario = sc;
+        function setGroupScenario(sc) {
+            activeScenario = sc;
             frameIndex = 0;
             const label = document.getElementById('activeScenarioLabel');
             const log = document.getElementById('filterLogText');
 
-            // Reset button styles
-            ['btnScenarioNormal', 'btnScenarioFly', 'btnScenarioDefecation', 'btnScenarioEstrus'].forEach(id => {
-                const b = document.getElementById(id);
-                b.className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition border border-slate-700';
+            // Reset buttons
+            ['btnAllNormal', 'btnCow2Estrus', 'btnCow1Def', 'btnCow3Fly'].forEach(id => {
+                document.getElementById(id).className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition border border-slate-700';
             });
 
-            if (sc === 'normal') {
-                document.getElementById('btnScenarioNormal').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white shadow-lg transition hover:bg-emerald-500 border border-emerald-400/30';
-                label.innerText = 'Normal (Diöstrus)';
+            if (sc === 'all_normal') {
+                document.getElementById('btnAllNormal').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white shadow-lg transition hover:bg-emerald-500 border border-emerald-400/30';
+                label.innerText = 'Tüm Grup Sakin (Diöstrus)';
                 label.className = 'text-emerald-400 font-bold';
-                log.innerText = 'Filtre: Normal kuyruk hareketi izleniyor (|θ| < 15°).';
-            } else if (sc === 'fly') {
-                document.getElementById('btnScenarioFly').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-amber-600 text-white shadow-lg transition hover:bg-amber-500 border border-amber-400/30';
-                label.innerText = 'Sinek Kovma / Çırpma';
-                label.className = 'text-amber-400 font-bold';
-                log.innerText = 'Filtre: Hızlı çırpma tespit edildi (<0.3 sn) -> Gürültü elendi!';
-            } else if (sc === 'defecation') {
-                document.getElementById('btnScenarioDefecation').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-amber-700 text-white shadow-lg transition hover:bg-amber-600 border border-amber-500/30';
-                label.innerText = 'Dışkılama Postürü';
-                label.className = 'text-amber-500 font-bold';
-                log.innerText = 'Filtre: Dikey kuyruk kalkışı saptandı (<15 sn) -> Östrus sayacı kilitlendi.';
-            } else if (sc === 'estrus') {
-                document.getElementById('btnScenarioEstrus').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white shadow-lg transition hover:bg-red-500 border border-red-400/30';
-                label.innerText = 'KIZGINLIK (ÖSTRUS)';
+                log.innerText = 'MOT: 3 duraktaki hayvanların kuyruk açıları normal sınırda (|θ| < 15°).';
+            } else if (sc === 'cow2_estrus') {
+                document.getElementById('btnCow2Estrus').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white shadow-lg transition hover:bg-red-500 border border-red-400/30';
+                label.innerText = 'DURAK 2 (TR-06-3842) KIZGINLIKTA!';
                 label.className = 'text-red-400 font-bold animate-pulse';
-                log.innerText = 'Uç Birim: Kalıcı sapma (>1.5 sn) -> Vulva açık kalma oranı yükseliyor!';
+                log.innerText = 'Uç Birim: Durak 2 kuyruğu sağa saptı (|θ| > 24°) -> Sadece İnek 2 için alarm hazırlanıyor!';
+            } else if (sc === 'cow1_defecation') {
+                document.getElementById('btnCow1Def').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-amber-600 text-white shadow-lg transition hover:bg-amber-500 border border-amber-400/30';
+                label.innerText = 'DURAK 1: Dışkılama Duruşu';
+                label.className = 'text-amber-400 font-bold';
+                log.innerText = 'Filtre: Durak 1 kuyruğu dikey kalktı (<15 sn) -> Diğer inekleri etkilemeden kilitlendi.';
+            } else if (sc === 'cow3_fly') {
+                document.getElementById('btnCow3Fly').className = 'px-3 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white shadow-lg transition hover:bg-blue-500 border border-blue-400/30';
+                label.innerText = 'DURAK 3: Sinek Çırpma Refleksi';
+                label.className = 'text-blue-400 font-bold';
+                log.innerText = 'Filtre: Durak 3 anlık hızlı çırptı (<0.3 sn) -> Gürültü başarıyla elendi.';
             }
         }
 
         function toggleThermalMode() {
-            const overlay = document.getElementById('blackScreenOverlay');
-            overlay.classList.toggle('hidden');
+            document.getElementById('blackScreenOverlay').classList.toggle('hidden');
         }
 
         document.getElementById('blackScreenOverlay').addEventListener('dblclick', () => {
             document.getElementById('blackScreenOverlay').classList.add('hidden');
         });
 
-        // Main Animation & Kinematics Loop
+        // Main Animation & Multi-Instance Kinematics Loop
         function animate() {
             frameIndex++;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Kinematik Simülasyon Matematiği
-            let targetMidX = 210;
-            let targetMidY = 260;
+            // Arka Plan Ahır Durak Çizgileri & Bölmeler
+            drawBarnInfrastructure();
 
-            if (currentScenario === 'normal') {
-                // Hafif doğal sallantı
-                targetMidX = 210 + Math.sin(frameIndex * 0.05) * 8;
-                targetMidY = 260;
-                tailMid.x += (targetMidX - tailMid.x) * 0.1;
-                tailMid.y += (targetMidY - tailMid.y) * 0.1;
-            } else if (currentScenario === 'fly') {
-                // Hızlı 0.2 saniyelik çırpma
-                const flick = Math.sin(frameIndex * 0.8) > 0 ? 55 : -40;
-                tailMid.x = 210 + flick;
-                tailMid.y = 250;
-            } else if (currentScenario === 'defecation') {
-                // Dikey yukarı kalkış, minimal yatay sapma
-                targetMidX = 210 + Math.sin(frameIndex * 0.05) * 4;
-                targetMidY = 160; // Kuyruk havaya kalktı
-                tailMid.x += (targetMidX - tailMid.x) * 0.15;
-                tailMid.y += (targetMidY - tailMid.y) * 0.15;
-            } else if (currentScenario === 'estrus') {
-                // Belirgin ve kalıcı sağa/sola sapma (|θ| > 24°)
-                targetMidX = 210 + 75; // Sağa belirgin sapma
-                targetMidY = 250;
-                tailMid.x += (targetMidX - tailMid.x) * 0.1;
-                tailMid.y += (targetMidY - tailMid.y) * 0.1;
-            }
+            // Her Duraktaki İneğin Kinematiğini Bağımsız Hesapla ve Çiz
+            stalls.forEach((cow, idx) => {
+                let targetX = cow.baseX;
+                let targetY = 240;
+                let isDefecating = false;
 
-            // 2. Vektörel Açı Hesabı
-            const vTailX = tailMid.x - tailBase.x;
-            const vTailY = tailMid.y - tailBase.y;
-            const vRefX = tailBase.x - spine.x; // 0
-            const vRefY = tailBase.y - spine.y; // 60
-
-            const magTail = Math.sqrt(vTailX * vTailX + vTailY * vTailY);
-            const magRef = Math.sqrt(vRefX * vRefX + vRefY * vRefY);
-
-            const dot = vTailX * vRefX + vTailY * vRefY;
-            const cosVal = Math.min(Math.max(dot / (magTail * magRef), -1.0), 1.0);
-            const rawAngleDeg = Math.acos(cosVal) * (180 / Math.PI);
-            const crossZ = vRefX * vTailY - vRefY * vTailX;
-            tailAngle = crossZ < 0 ? -rawAngleDeg : rawAngleDeg;
-
-            // 3. Vulva ROI ve Açıklık Kontrolü
-            const dx = tailMid.x - vulva.x;
-            const dy = tailMid.y - vulva.y;
-            const distVulva = Math.sqrt(dx * dx + dy * dy);
-            isVulvaClear = distVulva > 35.0 && Math.abs(tailAngle) >= 20.0;
-
-            // Dışkılama durumunda açılmayı bastır
-            const isDefecation = (tailBase.y - tailMid.y > 20) && Math.abs(tailAngle) < 15;
-            let filteredExposed = isVulvaClear && !isDefecation;
-
-            // Sinek çırpma filtresi: En az 15 kare kesintisiz kalmalı
-            if (filteredExposed) {
-                sustainedExposedFrames++;
-                if (sustainedExposedFrames < 15 && currentScenario === 'fly') {
-                    filteredExposed = false;
+                if (activeScenario === 'cow2_estrus' && idx === 1) {
+                    // İnek 2: Belirgin sağa sapma
+                    targetX = cow.baseX + 55;
+                    targetY = 240;
+                } else if (activeScenario === 'cow1_defecation' && idx === 0) {
+                    // İnek 1: Dikey kalkış
+                    targetX = cow.baseX + Math.sin(frameIndex * 0.05) * 3;
+                    targetY = 160;
+                    isDefecating = true;
+                } else if (activeScenario === 'cow3_fly' && idx === 2) {
+                    // İnek 3: Hızlı sinek çırpması
+                    const flick = Math.sin(frameIndex * 0.8) > 0 ? 40 : -30;
+                    targetX = cow.baseX + flick;
+                    targetY = 240;
+                } else {
+                    // Normal hafif salınım
+                    targetX = cow.baseX + Math.sin(frameIndex * 0.04 + idx) * 6;
+                    targetY = 240;
                 }
-            } else {
-                sustainedExposedFrames = 0;
-            }
 
-            // Kayan pencere güncellemesi
-            if (windowExposedHistory.length >= windowCapacity) windowExposedHistory.shift();
-            windowExposedHistory.push(filteredExposed);
+                cow.tailMid.x += (targetX - cow.tailMid.x) * 0.12;
+                cow.tailMid.y += (targetY - cow.tailMid.y) * 0.12;
 
-            const trueCount = windowExposedHistory.filter(Boolean).length;
-            exposureRate = (trueCount / windowExposedHistory.length) * 100;
+                // Vektörel Açı Hesabı
+                const vTailX = cow.tailMid.x - cow.tailBase.x;
+                const vTailY = cow.tailMid.y - cow.tailBase.y;
+                const vRefX = 0;
+                const vRefY = cow.tailBase.y - cow.spine.y;
 
-            // HUD Güncelle
-            document.getElementById('hudAngle').innerText = `${tailAngle.toFixed(1)}°`;
-            document.getElementById('hudExposureRate').innerText = `%${exposureRate.toFixed(1)}`;
-            document.getElementById('hudVulvaStatus').innerText = filteredExposed ? 'AÇIK (Exposed)' : 'KAPALI (Covered)';
-            document.getElementById('hudVulvaStatus').className = filteredExposed ? 'text-amber-400 font-bold' : 'text-blue-300';
+                const magTail = Math.sqrt(vTailX * vTailX + vTailY * vTailY);
+                const magRef = vRefY;
+                const dot = vTailX * vRefX + vTailY * vRefY;
+                const cosVal = Math.min(Math.max(dot / (magTail * magRef), -1.0), 1.0);
+                const rawAngle = Math.acos(cosVal) * (180 / Math.PI);
+                const crossZ = vRefX * vTailY - vRefY * vTailX;
+                cow.angle = crossZ < 0 ? -rawAngle : rawAngle;
 
-            // 4. Çizim Rutini (Cow Anatomy Canvas)
-            drawCowAnatomy();
+                // Vulva Açıklık Kontrolü
+                const dx = cow.tailMid.x - cow.vulva.x;
+                const dy = cow.tailMid.y - cow.vulva.y;
+                const distVulva = Math.sqrt(dx * dx + dy * dy);
+                const rawClear = distVulva > 30.0 && Math.abs(cow.angle) >= 20.0;
+                const filteredClear = rawClear && !isDefecating && !(activeScenario === 'cow3_fly' && idx === 2);
 
-            // 5. Kızgınlık Alarmı Tetikleme (R_open >= %65)
-            if (exposureRate >= 65.0 && !activeAlarmTriggered && currentScenario === 'estrus') {
-                triggerFarmerAlert();
+                if (cow.exposureHistory.length >= 100) cow.exposureHistory.shift();
+                cow.exposureHistory.push(filteredClear);
+
+                const count = cow.exposureHistory.filter(Boolean).length;
+                cow.exposureRate = (count / cow.exposureHistory.length) * 100;
+                cow.isEstrus = cow.exposureRate >= 65.0;
+
+                // İneği Çiz
+                drawCowInstance(cow, idx, filteredClear, isDefecating);
+
+                // UI Kartlarını Güncelle
+                updateCowCard(idx, cow);
+            });
+
+            // Alarm Kontrolü (İnek 2 Kızgınlıkta ise)
+            if (stalls[1].isEstrus && !alertFired && activeScenario === 'cow2_estrus') {
+                triggerGroupAlert(stalls[1], 2);
             }
 
             requestAnimationFrame(animate);
         }
 
-        function drawCowAnatomy() {
-            // Arka plan ızgarası
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < canvas.width; i += 30) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
-            }
+        function drawBarnInfrastructure() {
+            // Ahır bölme demirleri (Stall Partitions)
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 4;
+            [213, 426].forEach(x => {
+                ctx.beginPath();
+                ctx.moveTo(x, 40);
+                ctx.lineTo(x, 380);
+                ctx.stroke();
 
-            // İnek Gövde Silüeti (Pelvis & Bacaklar)
-            ctx.fillStyle = '#1e293b';
-            ctx.beginPath();
-            ctx.ellipse(210, 160, 110, 90, 0, 0, Math.PI * 2);
-            ctx.fill();
+                // Üst yatay boru
+                ctx.beginPath();
+                ctx.arc(x, 60, 10, 0, Math.PI * 2);
+                ctx.fillStyle = '#475569';
+                ctx.fill();
+            });
 
-            // Sol / Sağ Bacak
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(130, 200, 35, 180);
-            ctx.fillRect(255, 200, 35, 180);
-
-            // Vulva ROI Çemberi (Magenta)
-            ctx.strokeStyle = isVulvaClear ? '#ec4899' : '#475569';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([4, 4]);
-            ctx.beginPath();
-            ctx.arc(vulva.x, vulva.y, 35, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Vulva Anatomik Merkez Noktası
-            ctx.fillStyle = '#ec4899';
-            ctx.beginPath();
-            ctx.arc(vulva.x, vulva.y, 6, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Dikey Referans Eksen Çizgisi (V_ref - Kesikli Mavi)
-            ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(spine.x, spine.y);
-            ctx.lineTo(tailBase.x, tailBase.y + 140);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Kuyruk Vektörü Çizgisi (V_tail - Kalın Sarı/Yeşil)
-            ctx.strokeStyle = Math.abs(tailAngle) >= 20.0 ? '#ef4444' : '#10b981';
-            ctx.lineWidth = 6;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(tailBase.x, tailBase.y);
-            ctx.lineTo(tailMid.x, tailMid.y);
-            ctx.stroke();
-
-            // Anahtar Noktalar (Keypoints)
-            // P_spine
-            ctx.fillStyle = '#eab308';
-            ctx.beginPath(); ctx.arc(spine.x, spine.y, 6, 0, Math.PI * 2); ctx.fill();
-
-            // P_tailbase
-            ctx.fillStyle = '#3b82f6';
-            ctx.beginPath(); ctx.arc(tailBase.x, tailBase.y, 7, 0, Math.PI * 2); ctx.fill();
-
-            // P_tailmid
-            ctx.fillStyle = '#06b6d4';
-            ctx.beginPath(); ctx.arc(tailMid.x, tailMid.y, 8, 0, Math.PI * 2); ctx.fill();
-
-            // Keypoint İsim Etiketleri
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '10px monospace';
-            ctx.fillText('P_spine', spine.x + 10, spine.y + 4);
-            ctx.fillText('P_tailbase', tailBase.x + 10, tailBase.y + 4);
-            ctx.fillText('P_vulva (ROI)', vulva.x - 65, vulva.y + 4);
-            ctx.fillText('P_tailmid', tailMid.x + 12, tailMid.y + 4);
+            // Durak Numarası Etiketleri
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText('DURAK 1', 75, 30);
+            ctx.fillText('DURAK 2', 290, 30);
+            ctx.fillText('DURAK 3', 500, 30);
         }
 
-        // Çiftçiye Alarm Gönderme Rutini (Bovi-Farmer Entegrasyonu)
-        function triggerFarmerAlert() {
-            activeAlarmTriggered = true;
+        function drawCowInstance(cow, idx, isClear, isDefecating) {
+            // Gövde Silüeti
+            ctx.fillStyle = idx === 1 && cow.isEstrus ? '#2d1519' : '#1e293b';
+            ctx.beginPath();
+            ctx.ellipse(cow.baseX, 170, 75, 70, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Arka Bacaklar
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(cow.baseX - 55, 200, 24, 160);
+            ctx.fillRect(cow.baseX + 31, 200, 24, 160);
+
+            // Bounding Box (Kamera Çoklu Nesne Kutusu)
+            ctx.strokeStyle = cow.isEstrus ? '#ef4444' : '#10b981';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(cow.baseX - 85, 45, 170, 320);
+
+            // Vulva ROI Çemberi
+            ctx.strokeStyle = isClear ? '#ec4899' : '#475569';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.arc(cow.vulva.x, cow.vulva.y, 25, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Kuyruk Vektörü Çizgisi
+            ctx.strokeStyle = Math.abs(cow.angle) >= 20.0 ? (isDefecating ? '#f59e0b' : '#ef4444') : '#10b981';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cow.tailBase.x, cow.tailBase.y);
+            ctx.lineTo(cow.tailMid.x, cow.tailMid.y);
+            ctx.stroke();
+
+            // Keypoint Noktaları
+            // Spine (Sarı)
+            ctx.fillStyle = '#eab308';
+            ctx.beginPath(); ctx.arc(cow.spine.x, cow.spine.y, 5, 0, Math.PI * 2); ctx.fill();
+
+            // Tailbase (Mavi)
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath(); ctx.arc(cow.tailBase.x, cow.tailBase.y, 6, 0, Math.PI * 2); ctx.fill();
+
+            // Tailmid (Cyan)
+            ctx.fillStyle = '#06b6d4';
+            ctx.beginPath(); ctx.arc(cow.tailMid.x, cow.tailMid.y, 6, 0, Math.PI * 2); ctx.fill();
+
+            // Vulva (Pembe)
+            ctx.fillStyle = '#ec4899';
+            ctx.beginPath(); ctx.arc(cow.vulva.x, cow.vulva.y, 5, 0, Math.PI * 2); ctx.fill();
+
+            // Bbox üst etiket
+            ctx.fillStyle = cow.isEstrus ? '#ef4444' : '#10b981';
+            ctx.fillRect(cow.baseX - 85, 45, 100, 16);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 9px monospace';
+            ctx.fillText(`D${idx+1}: ${cow.cowId.split('-')[2]}`, cow.baseX - 80, 56);
+        }
+
+        function updateCowCard(idx, cow) {
+            const angleEl = document.getElementById(`angleCow${idx+1}`);
+            const rateEl = document.getElementById(`rateCow${idx+1}`);
+            const cardEl = document.getElementById(`cardCow${idx+1}`);
+            const badgeEl = document.getElementById(`badgeCow${idx+1}`);
+            const phoneStatus = document.getElementById(`phoneD${idx+1}Status`);
+
+            angleEl.innerText = `${cow.angle.toFixed(1)}°`;
+            rateEl.innerText = `%${cow.exposureRate.toFixed(1)}`;
+
+            if (cow.isEstrus) {
+                cardEl.className = 'bg-red-950/60 border-2 border-red-500 rounded-xl p-2.5 text-xs transition';
+                badgeEl.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white animate-pulse';
+                badgeEl.innerText = 'ÖSTRUS!';
+                phoneStatus.innerText = 'KIZGINLIK (%' + cow.exposureRate.toFixed(0) + ')';
+                phoneStatus.className = 'text-red-400 font-bold';
+            } else {
+                cardEl.className = 'bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs transition';
+                badgeEl.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300';
+                badgeEl.innerText = cow.cowId;
+                phoneStatus.innerText = 'Normal';
+                phoneStatus.className = 'text-emerald-400 font-bold';
+            }
+        }
+
+        function triggerGroupAlert(cow, stallNumber) {
+            alertFired = true;
             playSiren();
             setTimeout(playSiren, 600);
 
-            // Çiftçi ekranına kırmızı titreşim ver
             const phoneScreen = document.getElementById('farmerPhoneScreen');
             phoneScreen.classList.add('alarm-active');
 
-            // Sayaçları güncelle
-            document.getElementById('phoneAlertCount').innerText = '1';
-            document.getElementById('phoneInseminationCount').innerText = '1';
-
-            // Boş durumu kaldır ve alarm kartı ekle
             document.getElementById('emptyAlertsState').classList.add('hidden');
-
             const alertsContainer = document.getElementById('alertsContainer');
             alertsContainer.innerHTML = `
-                <div id="activeAlertCard" class="bg-red-950/60 border-2 border-red-500 rounded-2xl p-3 shadow-xl transition-all">
+                <div id="activeAlertCard" class="bg-red-950/70 border-2 border-red-500 rounded-2xl p-3 shadow-xl transition-all">
                     <div class="flex justify-between items-start">
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-red-400 bg-red-900/40 px-2 py-0.5 rounded border border-red-700/60">
-                                🚨 KIZGINLIK TESPİTİ
+                                🚨 GRUP UYARISI: DURAK ${stallNumber}
                             </span>
-                            <h4 class="text-sm font-bold text-white mt-1">İnek: TR-06-3842</h4>
+                            <h4 class="text-sm font-bold text-white mt-1">İnek: ${cow.cowId}</h4>
                         </div>
-                        <span class="text-xs font-bold text-red-300 font-mono">%${exposureRate.toFixed(1)} Açık</span>
+                        <span class="text-xs font-bold text-red-300 font-mono">%${cow.exposureRate.toFixed(1)} Açık</span>
                     </div>
 
-                    <div class="bg-slate-900/80 rounded-xl p-2.5 mt-2.5 border border-slate-800 text-[11px]">
+                    <div class="bg-slate-900/90 rounded-xl p-2.5 mt-2 border border-slate-800 text-[11px]">
                         <p class="text-amber-400 font-bold flex items-center gap-1">
                             <i class="fa-solid fa-clock"></i> AM/PM Tohumlama Zamanı:
                         </p>
                         <p class="text-slate-200 font-semibold mt-0.5">Bugün 20:30 - 02:30 Arası</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">(Tespitten 12-18 saat sonrası - Akşam Tohumla)</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Durak ${stallNumber} izole edildi • Akşam tohumlayınız</p>
                     </div>
 
-                    <button onclick="acknowledgeAlert()" class="w-full mt-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center justify-center gap-1.5">
+                    <button onclick="acknowledgeAlert()" class="w-full mt-2.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-check"></i> Tohumlama Yapıldı / Onayla
                     </button>
                 </div>
@@ -525,19 +596,16 @@
         }
 
         function acknowledgeAlert() {
-            activeAlarmTriggered = false;
+            alertFired = false;
             const phoneScreen = document.getElementById('farmerPhoneScreen');
             phoneScreen.classList.remove('alarm-active');
-
-            document.getElementById('phoneAlertCount').innerText = '0';
-            document.getElementById('phoneInseminationCount').innerText = '0';
 
             const card = document.getElementById('activeAlertCard');
             if (card) {
                 card.innerHTML = `
-                    <div class="text-center py-3 text-emerald-400 text-xs font-semibold">
+                    <div class="text-center py-2.5 text-emerald-400 text-xs font-semibold">
                         <i class="fa-solid fa-circle-check text-base mb-1 block"></i>
-                        TR-06-3842 için tohumlama başarıyla kaydedildi.
+                        Durak 2 (TR-06-3842) için tohumlama kaydedildi.
                     </div>
                 `;
                 setTimeout(() => {
@@ -547,14 +615,11 @@
             }
         }
 
-        // Saat güncellemesi
         setInterval(() => {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('phoneClock').innerText = timeStr;
+            document.getElementById('phoneClock').innerText = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
         }, 1000);
 
-        // Başlat
         animate();
     </script>
 </body>
