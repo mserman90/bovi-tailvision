@@ -66,3 +66,18 @@ Geniş açılı tek bir kamera ile yan yana duran bir grup ineği izlemek için:
 * **Mesafe:** İneğin kuyruk sokumundan (pelvis) **$1.2\text{ m} - 1.8\text{ m}$** geriye.
 * **Yükseklik:** İneğin sırt hizasının yaklaşık **$20 - 30\text{ cm}$** üzerine (yerden ~$1.5\text{ m}$).
 * **Eğim Açısı:** Aşağıya doğru **$15^\circ - 20^\circ$** açıyla kuyruk kökü ve vulvayı tam karşıdan görecek şekilde ayarlanır.
+
+---
+
+### 4. ELDE AKILLI TELEFONLA ÖLÇÜM GEOMETRİSİ (GEBELİK ÖN TARAMASI)
+
+ReproScan Mobil ile hem sığırlarda hem de koyunlarda elde yapılacak hızlı gebelik taramalarında sinyal kalitesini maksimize etmek için önerilen tutuş geometrisi:
+
+#### 4.1. Sığırlarda Rumen Akustiği ve Açlık Çukuru Solunumu
+1. **Mikrofon Konumu:** Telefonun alt ana mikrofonu, ineğin **sol açlık çukuruna (paralumbar fossa - rumen dorsal kesesi)** $5 - 10\text{ cm}$ mesafeye yaklaştırılır. Aşırı rüzgar veya gürültülü fan ortamında mikrofon üzerine standart köpük rüzgarlık takılması önerilir.
+2. **Kamera Açısı:** Kamera lensi, açlık çukurunun solunumla birlikte içeri-dışarı hareketini profil/çapraz ($45^\circ$) açıdan görecek şekilde $0.5 - 1.0\text{ m}$ mesafeden 30 saniye sabit tutulur.
+3. **Kaudal Vulva Kontrolü:** Ölçüm sonunda telefon hayvanın arkasına geçilerek vulva dudaklarına $30 - 50\text{ cm}$ mesafeden tutulur; kuruluk, ödem ve akıntı varlığı doğrulanır.
+
+#### 4.2. Koyunlarda Göğüs / Flank Ölçümü
+1. Hayvan hafifçe zapt edilirken telefon sağ veya sol böğür hizasında kaburgaların hemen arkasına yerleştirilir.
+2. 30 saniyelik tarama süresince geviş çiğneme sesleri ve solunum dalgası kaydedilir.

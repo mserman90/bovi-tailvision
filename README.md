@@ -43,11 +43,6 @@ reproscan/
 │   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi
 │   │   │   └── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
 │   │   └── src/main/res/layout/activity_farmer_main.xml
-│   │   │   │   ├── domain/model/             # Gebelik risk seviyeleri & sensör batch'i
-│   │   │   │   └── ml/LateFusionClassifier.kt # Çok modlu gebelik ön tarama füzyonu
-│   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi
-│   │   │   └── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
-│   │   └── src/main/res/layout/activity_farmer_main.xml
 │   │
 │   ├── build.gradle.kts
 │   └── settings.gradle.kts
@@ -119,3 +114,14 @@ Detaylı bağlantı ve grup montaj şemaları için [HARDWARE_SETUP.md](file:///
 * **BSI Direnci:** Cihazın açılabilmesi için GND ile BSI pinleri arasına **$10\text{ k}\Omega$ direnç** bağlanmalıdır.
 * **Grup Montajı:** 3-4 duraklık bir sırayı izlemek için kamera yerden $2.8\text{ m}$ yüksekliğe, hayvanların $3.0\text{ m}$ arkasına $25^\circ$ eğimle yerleştirilir.
 * **Yalıtım:** Amonyak ve neme karşı **IP65 buat kutusu** ve optik polikarbonat pencere kullanılmalıdır.
+
+---
+
+## 📚 Dokümantasyon ve Teknik Kılavuzlar
+
+Detaylı mühendislik raporları, biyolojik altyapı ve kullanım kılavuzları `docs/` dizininde yer almaktadır:
+
+1. 📄 **[ACADEMIC_PAPER_AND_MANUAL.md](docs/ACADEMIC_PAPER_AND_MANUAL.md):** Akademik seviyede araştırma makalesi, östrus kinematiği, 21/42 günlük non-return biyolojisi, çok modlu geç füzyon (Late Fusion) matematiksel türetimleri, klinik karar eşikleri ve çiftlik operasyon kılavuzu.
+2. 🏛️ **[ARCHITECTURE.md](docs/ARCHITECTURE.md):** Çok katmanlı uç birim yapay zeka ve IoT topolojisi, tek çıkarım geçişli (Single-pass) MOT takip motoru, MQTT ağ protokolü, JSON yükleri ve sıfır bellek tahsisli (zero-allocation) termal koruma tasarımı.
+3. 🔧 **[HARDWARE_SETUP.md](docs/HARDWARE_SETUP.md):** Eski Android telefonların 7/24 kesintisiz çalışması için batarya iptali, $10\text{ k}\Omega$ BSI direnç simülasyonu, LM2596 4.0V DC bağlantısı, IP65 buat kutusu lens montajı ve ahır montaj geometrisi.
+4. 🌐 **[docs/index.html](docs/index.html):** Canlı çift cihazlı web simülasyonu (Sabit kamera grup kızgınlık takibi, cep telefonuyla sığır ve koyun gebelik taraması ve sanal çiftçi cep telefonu uyarısı).
