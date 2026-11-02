@@ -1,5 +1,9 @@
 # ReproScan: Akıllı Ruminant Üreme ve Karar Destek Platformu (ReproScan AI)
 
+[![GitHub Repo](https://img.shields.io/badge/GitHub-mserman90%2Freproscan-blue?logo=github)](https://github.com/mserman90/reproscan)
+[![Live Demo](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-emerald?logo=githubpages)](https://mserman90.github.io/reproscan/)
+[![Companion App](https://img.shields.io/badge/OviScan-Companion%20Module-teal)](https://mserman90.github.io/oviscan-android/)
+
 **ReproScan**, büyükbaş ve küçükbaş hayvancılıkta harici donanım maliyetlerini ortadan kaldırarak atıl ve standart Android akıllı telefonların yerleşik donanımlarını (kamera, mikrofon, ivmeölçer) uç birim yapay zeka (Edge AI) ile buluşturan birleşik bir üreme karar destek platformudur:
 
 1. 🐄 **ReproScan Bovine (Büyükbaş Sığır):** Ahırda durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
