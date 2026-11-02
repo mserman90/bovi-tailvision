@@ -7,64 +7,75 @@
     android:background="@color/bg_light"
     android:orientation="vertical">
 
-    <!-- Üst Başlık & Birleşik Çiftlik Durumu -->
+    <!-- OviScan Warm Editorial Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_farmer"
+        android:background="@color/card_bg"
+        android:elevation="0dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="12dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="REPROSCAN SÜRÜ YÖNETİMİ"
-            android:textColor="@color/white"
-            android:textSize="20sp"
+            android:text="REPROSCAN"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:fontFamily="serif"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvConnectionStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="2dp"
             android:text="@string/status_connected"
-            android:textColor="#C8E6C9"
-            android:textSize="12sp" />
+            android:textColor="@color/status_good_text"
+            android:textSize="11sp" />
 
-        <!-- Sekme Seçici: Büyükbaş (Bovine) vs Küçükbaş (Ovine) -->
+        <!-- Sekme Seçici: Büyükbaş (Bovine) vs Küçükbaş (Ovine) - Pure Pill Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="#1B4D1E"
+            android:layout_marginTop="10dp"
+            android:background="@color/surface_alt"
             android:padding="3dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnTabBovi"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="36dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/white"
+                android:backgroundTint="@color/text_primary"
                 android:text="🐄 ReproScan Bovine"
-                android:textColor="@color/primary_farmer"
+                android:textColor="@color/white"
                 android:textSize="11sp"
+                app:cornerRadius="18dp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnTabOvi"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
-                android:layout_height="38dp"
+                android:layout_height="36dp"
                 android:layout_weight="1"
                 android:text="🐑 ReproScan Ovine"
-                android:textColor="@color/white"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
+                app:cornerRadius="18dp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color" />
 
     <!-- ================= VIEW 1: BOVI-TAILVISION (BÜYÜKBAŞ) ================= -->
     <LinearLayout
@@ -73,37 +84,39 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Alt Modül Seçici (Bovine İçi: Kamera Alarmları vs Elde Gebelik Taraması) -->
+        <!-- Alt Modül Seçici (Bovine İçi: Ahır Alarmları vs Elde Gebelik Taraması) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E8F5E9"
+            android:background="@color/surface_alt"
             android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
+            android:paddingVertical="5dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnSubTabBoviBarn"
                 style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
-                android:layout_height="34dp"
+                android:layout_height="32dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/primary_farmer"
+                android:backgroundTint="@color/text_primary"
                 android:text="📡 Ahır Alarmları"
                 android:textColor="@color/white"
-                android:textSize="11sp"
+                android:textSize="10sp"
+                app:cornerRadius="16dp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnSubTabBoviPregnancy"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
-                android:layout_height="34dp"
+                android:layout_height="32dp"
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:text="📱 Elde Gebelik Taraması"
-                android:textColor="@color/primary_farmer"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                app:cornerRadius="16dp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -115,7 +128,7 @@
             android:orientation="vertical"
             android:visibility="visible">
 
-            <!-- Hızlı Özet ve Sayaç Kartı -->
+            <!-- Hızlı Özet ve Sayaç Kartı - Zero Shadow / 1dp Border -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -128,8 +141,10 @@
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
                     app:cardBackgroundColor="@color/card_bg"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="2dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_color"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -142,8 +157,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/alert_red"
-                            android:textSize="24sp"
+                            android:textColor="@color/status_alert_text"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -161,8 +176,10 @@
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     app:cardBackgroundColor="@color/card_bg"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="2dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_color"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -175,8 +192,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/accent_farmer"
-                            android:textSize="24sp"
+                            android:textColor="@color/status_good_text"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -198,7 +215,7 @@
                 android:paddingBottom="4dp"
                 android:text="@string/lbl_alerts_heading"
                 android:textColor="@color/text_primary"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -208,8 +225,8 @@
                 android:gravity="center"
                 android:padding="28dp"
                 android:text="@string/lbl_no_alerts"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
                 android:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -235,21 +252,22 @@
                 android:orientation="vertical"
                 android:padding="12dp">
 
-                <!-- Bilgilendirme Kartı -->
+                <!-- Bilgilendirme Kartı - OviScan Status Good Neutral -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#E8F5E9"
-                    app:cardCornerRadius="8dp"
-                    app:strokeColor="#A5D6A7"
+                    app:cardBackgroundColor="@color/status_good_bg"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/status_good_border"
                     app:strokeWidth="1dp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="10dp"
-                        android:text="ℹ️ REPROSCAN BOVINE GEBELİK: Harici ultrason probu gerektirmeden tohumlama sonrası 21/42 günlük non-return takvimi, rumen geviş akustiği, kamera optik solunumu ve vulva morfolojisini birleştirerek karar desteği üretir."
-                        android:textColor="#1B5E20"
+                        android:padding="12dp"
+                        android:text="ℹ️ REPROSCAN BOVINE: Tohumlama sonrası 21/42 günlük non-return takvimi, rumen geviş akustiği ve optik solunum verileriyle non-invaziv karar desteği üretir."
+                        android:textColor="@color/status_good_text"
                         android:textSize="11sp" />
                 </com.google.android.material.card.MaterialCardView>
 
@@ -259,8 +277,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     app:cardBackgroundColor="@color/card_bg"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="2dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_color"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -301,31 +321,25 @@
                                 android:textSize="13sp" />
                         </LinearLayout>
 
-                        <!-- Sensör Ölçüm Değerleri (Hızlı Simülasyon / Okuma) -->
-                        <LinearLayout
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Geviş Çiğneme: 52/dk | Solunum: 22 BPM | Vulva: Kapalı"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="Geviş Çiğneme: 52/dk • Solunum: 22 BPM • Vulva: Kapalı"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp" />
 
                         <Button
                             android:id="@+id/btnRunBoviPregnancyScan"
+                            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:backgroundTint="@color/primary_farmer"
+                            android:layout_marginTop="12dp"
+                            android:backgroundTint="@color/text_primary"
                             android:text="🐄 Multimodal Sığır Gebelik Taraması Yap"
                             android:textColor="@color/white"
-                            android:textSize="13sp"
+                            app:cornerRadius="20dp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -338,8 +352,8 @@
                     android:layout_marginTop="12dp"
                     app:cardBackgroundColor="@color/card_bg"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="3dp"
-                    app:strokeColor="#2E7D32"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/status_good_border"
                     app:strokeWidth="1.5dp"
                     android:visibility="gone">
 
@@ -369,12 +383,11 @@
                                 android:id="@+id/tvBoviProbabilityBadge"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/badge_alert_bg"
-                                android:backgroundTint="#2E7D32"
+                                android:background="@color/status_good_bg"
                                 android:paddingHorizontal="10dp"
                                 android:paddingVertical="4dp"
                                 android:text="%88 GEBELİK OLASILIĞI"
-                                android:textColor="@color/white"
+                                android:textColor="@color/status_good_text"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -388,12 +401,11 @@
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
 
-                        <!-- XAI Sensör Açıklamaları -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:background="#F1F8E9"
+                            android:background="@color/surface_alt"
                             android:orientation="vertical"
                             android:padding="10dp">
 
@@ -401,7 +413,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="📊 SENSÖR FÜZYON BULGULARI:"
-                                android:textColor="#33691E"
+                                android:textColor="@color/text_primary"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
 
@@ -411,7 +423,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:text="• Bulgular"
-                                android:textColor="#1B5E20"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="11sp" />
                         </LinearLayout>
 
@@ -421,7 +433,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="Ultrason Penceresi"
-                            android:textColor="#0D47A1"
+                            android:textColor="@color/status_good_text"
                             android:textSize="11sp"
                             android:textStyle="bold" />
 
@@ -455,21 +467,22 @@
             android:orientation="vertical"
             android:padding="12dp">
 
-            <!-- Yasal Uyarı Kartı -->
+            <!-- Yasal Uyarı Kartı - OviScan Status Warn -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#FFF8E1"
-                app:cardCornerRadius="8dp"
-                app:strokeColor="#FFE082"
+                app:cardBackgroundColor="@color/status_warn_bg"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/status_warn_border"
                 app:strokeWidth="1dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:padding="12dp"
                     android:text="⚠️ ÖNEMLİ: ReproScan Ovine, standart telefon sensörleriyle (mikrofon, kamera, ivmeölçer) çalışan bir ön tarama aracıdır; veteriner hekim ultrasonunun yerini almaz."
-                    android:textColor="#E65100"
+                    android:textColor="@color/status_warn_text"
                     android:textSize="11sp" />
             </com.google.android.material.card.MaterialCardView>
 
@@ -479,8 +492,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="@color/card_bg"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/border_color"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -523,13 +538,15 @@
 
                     <Button
                         android:id="@+id/btnRunOviScan"
+                        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:backgroundTint="@color/primary_farmer"
+                        android:layout_marginTop="12dp"
+                        android:backgroundTint="@color/text_primary"
                         android:text="🐑 Multimodal Gebelik Taraması Yap"
                         android:textColor="@color/white"
-                        android:textSize="13sp"
+                        app:cornerRadius="20dp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -542,8 +559,8 @@
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="@color/card_bg"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="3dp"
-                app:strokeColor="#2E7D32"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/status_good_border"
                 app:strokeWidth="1.5dp"
                 android:visibility="gone">
 
@@ -573,12 +590,11 @@
                             android:id="@+id/tvOviProbabilityBadge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/badge_alert_bg"
-                            android:backgroundTint="#2E7D32"
+                            android:background="@color/status_good_bg"
                             android:paddingHorizontal="10dp"
                             android:paddingVertical="4dp"
                             android:text="%84 GEBE OLASILIĞI"
-                            android:textColor="@color/white"
+                            android:textColor="@color/status_good_text"
                             android:textSize="11sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -592,13 +608,11 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
-                    <!-- Sensör Açıklamaları (XAI) -->
                     <LinearLayout
-                        android:id="@+id/layoutOviXai"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:background="#F1F8E9"
+                        android:background="@color/surface_alt"
                         android:orientation="vertical"
                         android:padding="10dp">
 
@@ -606,7 +620,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="📊 SENSÖR FÜZYON BULGULARI:"
-                            android:textColor="#33691E"
+                            android:textColor="@color/text_primary"
                             android:textSize="11sp"
                             android:textStyle="bold" />
 
@@ -616,7 +630,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="• Dahili Mikrofon: Düzenli geviş getirme ritmi\n• Dahili İvmeölçer: Yüksek yatma oranı (%45)\n• Dahili Kamera: 31 BPM solunum frekansı\n• Tohumlama Takvimi: 42. gün (2. döngü aşılmış)"
-                            android:textColor="#1B5E20"
+                            android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
 

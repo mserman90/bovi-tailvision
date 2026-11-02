@@ -31,6 +31,14 @@ class FarmerMainActivity : AppCompatActivity() {
     private lateinit var adapter: AlertAdapter
     private val alertList = mutableListOf<FarmerAlertModel>()
 
+    // OviScan Color Palette
+    private val colorPrimaryText = Color.parseColor("#191817")
+    private val colorSecondaryText = Color.parseColor("#58554F")
+    private val colorStatusGood = Color.parseColor("#225633")
+    private val colorStatusWarn = Color.parseColor("#825412")
+    private val colorStatusAlert = Color.parseColor("#862B23")
+    private val colorSurfaceAlt = Color.parseColor("#F3F1EC")
+
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -62,42 +70,42 @@ class FarmerMainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Ana Sekme Değiştirici: Büyükbaş (Bovi) vs Küçükbaş (OviScan)
+        // Ana Sekme Değiştirici: Büyükbaş (Bovine) vs Küçükbaş (Ovine) - OviScan Pill Tarzı
         binding.btnTabBovi.setOnClickListener {
             binding.layoutBoviView.visibility = View.VISIBLE
             binding.layoutOviView.visibility = View.GONE
-            binding.btnTabBovi.setBackgroundColor(Color.WHITE)
-            binding.btnTabBovi.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnTabBovi.setBackgroundColor(colorPrimaryText)
+            binding.btnTabBovi.setTextColor(Color.WHITE)
             binding.btnTabOvi.setBackgroundColor(Color.TRANSPARENT)
-            binding.btnTabOvi.setTextColor(Color.WHITE)
+            binding.btnTabOvi.setTextColor(colorSecondaryText)
         }
 
         binding.btnTabOvi.setOnClickListener {
             binding.layoutBoviView.visibility = View.GONE
             binding.layoutOviView.visibility = View.VISIBLE
-            binding.btnTabOvi.setBackgroundColor(Color.WHITE)
-            binding.btnTabOvi.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnTabOvi.setBackgroundColor(colorPrimaryText)
+            binding.btnTabOvi.setTextColor(Color.WHITE)
             binding.btnTabBovi.setBackgroundColor(Color.TRANSPARENT)
-            binding.btnTabBovi.setTextColor(Color.WHITE)
+            binding.btnTabBovi.setTextColor(colorSecondaryText)
         }
 
         // Bovine Alt Sekme Değiştirici: Ahır Alarmları vs Elde Gebelik Taraması
         binding.btnSubTabBoviBarn.setOnClickListener {
             binding.layoutBoviBarnAlarms.visibility = View.VISIBLE
             binding.layoutBoviPregnancyScan.visibility = View.GONE
-            binding.btnSubTabBoviBarn.setBackgroundColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviBarn.setBackgroundColor(colorPrimaryText)
             binding.btnSubTabBoviBarn.setTextColor(Color.WHITE)
             binding.btnSubTabBoviPregnancy.setBackgroundColor(Color.TRANSPARENT)
-            binding.btnSubTabBoviPregnancy.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviPregnancy.setTextColor(colorSecondaryText)
         }
 
         binding.btnSubTabBoviPregnancy.setOnClickListener {
             binding.layoutBoviBarnAlarms.visibility = View.GONE
             binding.layoutBoviPregnancyScan.visibility = View.VISIBLE
-            binding.btnSubTabBoviPregnancy.setBackgroundColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviPregnancy.setBackgroundColor(colorPrimaryText)
             binding.btnSubTabBoviPregnancy.setTextColor(Color.WHITE)
             binding.btnSubTabBoviBarn.setBackgroundColor(Color.TRANSPARENT)
-            binding.btnSubTabBoviBarn.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviBarn.setTextColor(colorSecondaryText)
         }
 
         // Ahır Kamera İstasyonundan Canlı Alarm Dinleme
@@ -108,15 +116,15 @@ class FarmerMainActivity : AppCompatActivity() {
             }
         }
 
-        // Broker bağlantı durumu
+        // Broker bağlantı durumu (OviScan top bar status)
         FarmerAlertListenerService.onConnectionStateChanged = { connected ->
             runOnUiThread {
                 if (connected) {
-                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Aktif (ReproScan Canlı)"
-                    binding.tvConnectionStatus.setTextColor(Color.parseColor("#C8E6C9"))
+                    binding.tvConnectionStatus.text = "IoT Broker: Aktif (ReproScan Canlı)"
+                    binding.tvConnectionStatus.setTextColor(colorStatusGood)
                 } else {
-                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Bağlantı Kesildi"
-                    binding.tvConnectionStatus.setTextColor(Color.parseColor("#FFCDD2"))
+                    binding.tvConnectionStatus.text = "IoT Broker: Bağlantı Kesildi"
+                    binding.tvConnectionStatus.setTextColor(colorStatusAlert)
                 }
             }
         }
@@ -128,7 +136,6 @@ class FarmerMainActivity : AppCompatActivity() {
             val tag = binding.etCowTag.text.toString().trim().ifEmpty { "TR-06-3842" }
             val days = binding.etCowInsemDays.text.toString().trim().toIntOrNull() ?: 35
 
-            // Telefon sensör verileri batch'i oluştur
             val batch = BovineSensorDataBatch(
                 earTag = tag,
                 daysSinceInsemination = days,
@@ -142,26 +149,24 @@ class FarmerMainActivity : AppCompatActivity() {
                 hadObservedEstrusSinceAI = false
             )
 
-            // Sığır Multimodal Late Fusion Sınıflandırıcıyı Çalıştır
             val result = BovineLateFusionClassifier.classify(batch)
 
-            // UI'da Sonucu Göster
             binding.cardBoviPregnancyResult.visibility = View.VISIBLE
             binding.tvBoviCowTagTitle.text = result.earTag
             binding.tvBoviProbabilityBadge.text = String.format("%%%d GEBELİK OLASILIĞI", (result.probability * 100).toInt())
 
             when (result.riskLevel) {
                 BovinePregnancyRiskLevel.HIGH -> {
-                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#2E7D32"))
-                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#2E7D32")
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(colorStatusGood)
+                    binding.cardBoviPregnancyResult.strokeColor = colorStatusGood
                 }
                 BovinePregnancyRiskLevel.INCONCLUSIVE -> {
-                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#F57F17"))
-                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#F57F17")
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(colorStatusWarn)
+                    binding.cardBoviPregnancyResult.strokeColor = colorStatusWarn
                 }
                 BovinePregnancyRiskLevel.LOW -> {
-                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#C62828"))
-                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#C62828")
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(colorStatusAlert)
+                    binding.cardBoviPregnancyResult.strokeColor = colorStatusAlert
                 }
             }
 
@@ -180,7 +185,6 @@ class FarmerMainActivity : AppCompatActivity() {
             val tag = binding.etSheepTag.text.toString().trim().ifEmpty { "TR-06-KOYUN-01" }
             val days = binding.etInsemDays.text.toString().trim().toIntOrNull() ?: 42
 
-            // Dahili telefon sensör simülasyon batch'i oluştur
             val batch = SensorDataBatch(
                 earTag = tag,
                 daysSinceInsemination = days,
@@ -193,26 +197,24 @@ class FarmerMainActivity : AppCompatActivity() {
                 cameraRespirationBpm = 31.0f
             )
 
-            // Multimodal Late Fusion Sınıflandırıcıyı Çalıştır
             val result = LateFusionClassifier.classify(batch)
 
-            // UI'da Sonucu Göster
             binding.cardOviResult.visibility = View.VISIBLE
             binding.tvOviTagTitle.text = result.earTag
             binding.tvOviProbabilityBadge.text = String.format("%%%d GEBELİK OLASILIĞI", (result.probability * 100).toInt())
 
             when (result.riskLevel) {
                 PregnancyRiskLevel.HIGH -> {
-                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#2E7D32"))
-                    binding.cardOviResult.strokeColor = Color.parseColor("#2E7D32")
+                    binding.tvOviProbabilityBadge.setBackgroundColor(colorStatusGood)
+                    binding.cardOviResult.strokeColor = colorStatusGood
                 }
                 PregnancyRiskLevel.INCONCLUSIVE -> {
-                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#F57F17"))
-                    binding.cardOviResult.strokeColor = Color.parseColor("#F57F17")
+                    binding.tvOviProbabilityBadge.setBackgroundColor(colorStatusWarn)
+                    binding.cardOviResult.strokeColor = colorStatusWarn
                 }
                 PregnancyRiskLevel.LOW -> {
-                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#C62828"))
-                    binding.cardOviResult.strokeColor = Color.parseColor("#C62828")
+                    binding.tvOviProbabilityBadge.setBackgroundColor(colorStatusAlert)
+                    binding.cardOviResult.strokeColor = colorStatusAlert
                 }
             }
 

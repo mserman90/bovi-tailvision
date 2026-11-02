@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- OviScan Warm Neutral System for Edge Camera -->
+    <color name="bg_light">#FFF9F8F6</color>
+    <color name="card_bg">#FFFFFFFF</color>
+    <color name="surface_alt">#FFF3F1EC</color>
+    <color name="border_color">#FFE5E2DC</color>
+    <color name="text_primary">#FF191817</color>
+    <color name="text_secondary">#FF58554F</color>
+    <color name="text_muted">#FF827E76</color>
+    
     <color name="black">#FF000000</color>
-    <color name="pure_dark">#FF121212</color>
-    <color name="surface_dark">#FF1E1E1E</color>
-    <color name="primary_green">#FF2E7D32</color>
-    <color name="primary_green_dark">#FF1B5E20</color>
-    <color name="accent_amber">#FFFFB300</color>
-    <color name="alert_red">#FFD32F2F</color>
+    <color name="pure_dark">#FF191817</color>
+    <color name="surface_dark">#FF242220</color>
+    <color name="primary_green">#FF225633</color>
+    <color name="primary_green_dark">#FF1B4529</color>
+    <color name="accent_amber">#FF825412</color>
+    <color name="alert_red">#FF862B23</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="text_secondary">#FFAAAAAA</color>
 </resources>

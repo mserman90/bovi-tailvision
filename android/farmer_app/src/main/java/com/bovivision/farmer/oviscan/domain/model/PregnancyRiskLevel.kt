@@ -3,35 +3,25 @@ package com.bovivision.farmer.oviscan.domain.model
 enum class PregnancyRiskLevel(
     val titleTr: String,
     val descriptionTr: String,
-    val hexColor: Long,
-    val recommendedActionTr: String
+    val recommendedActionTr: String,
+    val hexColor: String
 ) {
     HIGH(
-        titleTr = "Gebe Olma Olasılığı Yüksek",
-        descriptionTr = "Sensör sinyalleri ve tohumlama sonrası davranış örüntüsü gebelik ile yüksek derecede uyumlu.",
-        hexColor = 0xFF2E7D32, // Yeşil
-        recommendedActionTr = "Sürü yönetiminde gebe rasyonuna geçiş planlayınız. Doğrulama için veteriner hekim ultrason randevusu alınız."
+        titleTr = "YÜKSEK GEBELİK OLASILIĞI",
+        descriptionTr = "Sensör sinyalleri ve tohumlama sonrası davranış örüntüsü gebelik ile yüksek derecede uyumludur.",
+        recommendedActionTr = "Sürü yönetiminde gebe rasyonuna geçiş planlayınız. Doğrulama için veteriner hekim ultrason randevusu alınız.",
+        hexColor = "#225633" // OviScan Muted Earthy Green
     ),
     INCONCLUSIVE(
-        titleTr = "Belirsiz / Tekrar Tarama Gerekli",
-        descriptionTr = "Sinyaller kesin ayrım için yetersiz; fizyolojik parametreler ara değer aralığında.",
-        hexColor = 0xFFF57F17, // Turuncu
-        recommendedActionTr = "7–10 gün sonra ölçümü tekrarlayınız veya şüpheli durumlarda doğrudan veteriner hekim muayenesine başvurunuz."
+        titleTr = "ŞÜPHELİ / BELİRSİZ (TEKRAR TEST)",
+        descriptionTr = "Biyolojik ve akustik göstergeler sınır değerdedir. Erken dönem veya gürültülü ortam nedeniyle kesin karara varılamamıştır.",
+        recommendedActionTr = "7 ila 10 gün sonra sakin bir saatte taramayı tekrarlayınız veya veteriner hekime danışınız.",
+        hexColor = "#825412" // OviScan Warm Ochre Amber
     ),
     LOW(
-        titleTr = "Gebe Olma Olasılığı Düşük (Boş İhtimali)",
-        descriptionTr = "Hareket ve akustik sinyaller östrus döngüsünün devam ettiğine veya gebeliğin şekillenmediğine işaret ediyor.",
-        hexColor = 0xFFC62828, // Kırmızı
-        recommendedActionTr = "Hayvanın tekrar kızgınlık (östrus) belirtilerini takip ediniz ve yeniden tohumlama protokolü için veteriner hekime danışınız."
-    );
-
-    companion object {
-        fun fromProbability(probability: Float): PregnancyRiskLevel {
-            return when {
-                probability >= 0.70f -> HIGH
-                probability >= 0.30f -> INCONCLUSIVE
-                else -> LOW
-            }
-        }
-    }
+        titleTr = "DÜŞÜK GEBELİK (BOŞ İHTİMALİ)",
+        descriptionTr = "Sık meleme, ajitasyon veya normal geviş getirme ritminin dışındaki örüntüler gebelik olasılığını düşürmektedir.",
+        recommendedActionTr = "Hayvanı tekrar kızgınlık (östrus) takibine alınız ve yeniden tohumlama/koç katımı planlayınız.",
+        hexColor = "#862B23" // OviScan Earthy Terra-cotta Red
+    )
 }

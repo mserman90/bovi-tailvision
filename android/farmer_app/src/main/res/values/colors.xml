@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_farmer">#FF1B5E20</color>
-    <color name="primary_farmer_dark">#FF0D3C10</color>
-    <color name="accent_farmer">#FF2E7D32</color>
-    <color name="alert_red">#FFD32F2F</color>
-    <color name="alert_amber">#FFF57C00</color>
-    <color name="bg_light">#FFF6F8F6</color>
+    <!-- OviScan Warm Neutral Editorial Design System -->
+    <color name="bg_light">#FFF9F8F6</color>
     <color name="card_bg">#FFFFFFFF</color>
-    <color name="text_primary">#FF212121</color>
-    <color name="text_secondary">#FF757575</color>
+    <color name="surface_alt">#FFF3F1EC</color>
+    <color name="border_color">#FFE5E2DC</color>
+    <color name="border_subtle">#FFECE9E3</color>
+    
+    <!-- Typography -->
+    <color name="text_primary">#FF191817</color>
+    <color name="text_secondary">#FF58554F</color>
+    <color name="text_muted">#FF827E76</color>
+    
+    <!-- Primary & Accents -->
+    <color name="primary_farmer">#FF191817</color>
+    <color name="primary_farmer_dark">#FF100F0F</color>
+    <color name="accent_farmer">#FF225633</color>
+    
+    <!-- Earthy Status Colors -->
+    <color name="status_good_bg">#FFEAF2EC</color>
+    <color name="status_good_text">#FF225633</color>
+    <color name="status_good_border">#FFD2E4D6</color>
+    
+    <color name="status_warn_bg">#FFF9F2E7</color>
+    <color name="status_warn_text">#FF825412</color>
+    <color name="status_warn_border">#FFEEDBC2</color>
+    
+    <color name="status_alert_bg">#FFF9ECEB</color>
+    <color name="status_alert_text">#FF862B23</color>
+    <color name="status_alert_border">#FFEDD0CE</color>
+    
+    <!-- Legacy aliases for backward compatibility -->
+    <color name="alert_red">#FF862B23</color>
+    <color name="alert_amber">#FF825412</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF191817</color>
 </resources>
