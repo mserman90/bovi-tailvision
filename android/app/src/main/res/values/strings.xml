@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Bovi-TailVision</string>
-    <string name="service_notification_title">Bovi-TailVision Aktif</string>
-    <string name="service_notification_desc">Sığır kuyruk izleme ve kızgınlık tespiti 7/24 çalışıyor...</string>
+    <string name="app_name">ReproScan Kamera</string>
+    <string name="service_notification_title">ReproScan Kamera Aktif</string>
+    <string name="service_notification_desc">Sığır grup kuyruk izleme ve kızgınlık tespiti 7/24 çalışıyor...</string>
     <string name="status_standby">Hazır / Beklemede</string>
-    <string name="status_running">Analiz Ediliyor (Edge Inference Aktif)</string>
+    <string name="status_running">Analiz Ediliyor (ReproScan Edge AI Aktif)</string>
     <string name="btn_start">Sistemi Başlat (Analiz &amp; Servis)</string>
     <string name="btn_stop">Sistemi Durdur</string>
     <string name="btn_toggle_screen">Ekranı Karart (Thermal Saving)</string>

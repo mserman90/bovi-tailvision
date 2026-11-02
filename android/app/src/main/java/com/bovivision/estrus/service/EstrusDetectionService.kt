@@ -254,10 +254,10 @@ class EstrusDetectionService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
-                "Bovi-TailVision Servisi",
+                "ReproScan Servisi",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Sığır kızgınlık analizi arka plan servisi"
+                description = "Sığır grup kızgınlık analizi arka plan servisi"
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
@@ -271,7 +271,7 @@ class EstrusDetectionService : LifecycleService() {
             PendingIntent.FLAG_IMMUTABLE
         )
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Bovi-TailVision Grup İzleme")
+            .setContentTitle("ReproScan Grup İzleme")
             .setContentText(contentText)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)

@@ -1,19 +1,19 @@
-# BOVI-TAILVISION & BOVI-FARMER: BİLGİSAYARLI GÖRÜ VE UÇ BİRİM YAPAY ZEKA TABANLI SIĞIR KIZGINLIK TESPİT SİSTEMİ
-## TEKNİK TEORİ, BİYOLOJİK KİNEMATİK, ÇOKLU İNEK TAKİP METODOLOJİSİ VE KULLANIM KILAVUZU
+# REPROSCAN: BİLGİSAYARLI GÖRÜ VE UÇ BİRİM YAPAY ZEKA TABANLI RUMİNANT ÜREME PLATFORMU
+## TEKNİK TEORİ, BİYOLOJİK KİNEMATİK, ÇOKLU İNEK TAKİP METODOLOJİSİ VE OVISCAN ENTEGRASYONU
 
-**Yazarlar:** Bovi-TailVision Araştırma & Geliştirme Grubu  
+**Yazarlar:** ReproScan Araştırma & Geliştirme Grubu  
 **Tarih:** Ekim 2026  
-**Doküman Sürümü:** 1.1.0 (Multi-Cow Group Monitoring Release)
+**Doküman Sürümü:** 1.2.0 (ReproScan Unified Suite Release)
 
 ---
 
 ## ÖZET (ABSTRACT)
 
-Süt sığırcılığı işletmelerinde kızgınlığın (östrus) zamanında ve doğru tespit edilememesi; uzayan buzağılama aralıkları, artan tohumlama maliyetleri ve yıllık süt veriminde telafisi güç ekonomik kayıplara neden olmaktadır. Geleneksel görsel gözlem yöntemleri iş gücü yoğun ve gece saatlerinde yetersiz kalırken; boyunluk, kulak küpesi ve pedometre gibi giyilebilir sensör sistemleri yüksek ilk yatırım ve bakım maliyetleri nedeniyle küçük ve orta ölçekli işletmeler için erişilemez durumdadır. 
+Süt sığırcılığı ve koyunculuk işletmelerinde kızgınlığın (östrus) ve erken gebeliğin zamanında ve doğru tespit edilememesi; uzayan buzağılama/kuzulama aralıkları, artan tohumlama maliyetleri ve yıllık süt/et veriminde telafisi güç ekonomik kayıplara neden olmaktadır. Geleneksel görsel gözlem yöntemleri iş gücü yoğun ve gece saatlerinde yetersiz kalırken; boyunluk, kulak küpesi ve pedometre gibi giyilebilir sensör sistemleri yüksek ilk yatırım ve bakım maliyetleri nedeniyle küçük ve orta ölçekli işletmeler için erişilemez durumdadır. 
 
-Bu çalışmada; bağlı duraklı veya serbest ahırlarda durak sırasının kaudal (pelvis) açısına sabitlenen atıl/eski model Android akıllı telefonların yerleşik kamerası ve işlem gücünü kullanarak **tek bir kamera ile bir grup ineğin (3 ila 6 durak)** eş zamanlı kızgınlığını izleyen derin öğrenme tabanlı uç birim (Edge AI) sistemi (**Bovi-TailVision**) geliştirilmiştir. Sistem; YOLO11n-pose mimarisinin INT8 kuantize varyantı ile kare başına **tek bir çıkarım geçişinde (Single Inference Pass)** görüş alanındaki tüm ineklerin anatomik ekseninden 4 temel anahtar noktayı ($P_{\text{spine}}, P_{\text{tailbase}}, P_{\text{tailmid}}, P_{\text{vulva}}$) 15 FPS hızında takip eder. Çoklu nesne takip motoru (`MultiCowTracker`), uzamsal durak yuvalama (Spatial Stall Slotting) yöntemiyle her hayvanı kendi durağına zimmetler ve her inek için bağımsız kayan pencere ($R_{\text{open}}^i$) ve gürültü filtresi (dışkılama ve sinek savurma durum makinesi) işletir. Kızgınlık eşiği aşıldığında ($R_{\text{open}} \ge \%65$), çiftçinin cep telefonundaki **Bovi-Farmer** uygulamasına MQTT protokolü üzerinden milisaniyeler mertebesinde sesli siren, durak numarası ve AM/PM tohumlama penceresi uyarısı iletilir. Yapılan deneysel simülasyonlarda sistem \%88.4 duyarlılık (sensitivity) ve \%93.1 özgüllük (specificity) seviyelerine ulaşmıştır.
+Bu çalışmada; bağlı duraklı veya serbest ahırlarda durak sırasının kaudal (pelvis) açısına sabitlenen atıl/eski model Android akıllı telefonların yerleşik kamerası ve işlem gücünü kullanarak **tek bir kamera ile bir grup ineğin (3 ila 6 durak)** eş zamanlı kızgınlığını izleyen derin öğrenme tabanlı uç birim (Edge AI) sistemi (**ReproScan Bovine**) geliştirilmiştir. Sistem; YOLO11n-pose mimarisinin INT8 kuantize varyantı ile kare başına **tek bir çıkarım geçişinde (Single Inference Pass)** görüş alanındaki tüm ineklerin anatomik ekseninden 4 temel anahtar noktayı ($P_{\text{spine}}, P_{\text{tailbase}}, P_{\text{tailmid}}, P_{\text{vulva}}$) 15 FPS hızında takip eder. Çoklu nesne takip motoru (`MultiCowTracker`), uzamsal durak yuvalama (Spatial Stall Slotting) yöntemiyle her hayvanı kendi durağına zimmetler ve her inek için bağımsız kayan pencere ($R_{\text{open}}^i$) ve gürültü filtresi (dışkılama ve sinek savurma durum makinesi) işletir. Kızgınlık eşiği aşıldığında ($R_{\text{open}} \ge \%65$), çiftçinin cep telefonundaki **ReproScan Mobil** uygulamasına MQTT protokolü üzerinden milisaniyeler mertebesinde sesli siren, durak numarası ve AM/PM tohumlama penceresi uyarısı iletilir. Platform ayrıca küçükbaş koyunlarda harici prob gerektirmeyen **ReproScan Ovine (OviScan)** çok modlu gebelik karar destek modülü ile kapalı döngü üreme yönetimini tamamlar. Yapılan deneysel simülasyonlarda sistem \%88.4 duyarlılık (sensitivity) ve \%93.1 özgüllük (specificity) seviyelerine ulaşmıştır.
 
-**Anahtar Kelimeler:** Süt Sığırcılığı, Östrus Tespiti, Çoklu Nesne Takibi (MOT), Bilgisayarlı Görü, Anahtar Nokta Tespiti (Pose Estimation), Uç Birim Yapay Zeka (Edge Computing), Sürdürülebilir Tarım Teknolojileri.
+**Anahtar Kelimeler:** Süt Sığırcılığı, Koyun Gebelik Taraması, Östrus Tespiti, Çoklu Nesne Takibi (MOT), Bilgisayarlı Görü, Anahtar Nokta Tespiti (Pose Estimation), Uç Birim Yapay Zeka (Edge Computing), ReproScan.
 
 ---
 
@@ -77,19 +77,19 @@ Zamanında tohumlama, döl veriminin en kritik parametresidir (Trimberger, 1948)
 
 $$\text{Pencere}_{\text{Başlangıç}} = t_{\text{alarm}} + 12\text{ saat}, \quad \text{Pencere}_{\text{Bitiş}} = t_{\text{alarm}} + 18\text{ saat}$$
 
-### 3.2. OviScan ile Kapalı Döngü Üreme Yönetimi (Closed-Loop Reproductive Lifecycle)
-Bovi-TailVision ve OviScan sistemleri birbirini tamamlayan bir üreme döngüsü oluşturur:
-1. **Kızgınlık Tespiti ve Tohumlama (Bovi):** Hayvan kızgınlığa girdiğinde Bovi-TailVision alarm üretir ve AM/PM kuralına göre tohumlama gerçekleştirilir.
-2. **Gebelik Ön Taraması (OviScan - 30 ila 45 Gün Sonra):** Tohumlanan hayvanlar tohumlamadan 30-45 gün sonra harici prob gerektirmeyen OviScan multimodal sensör füzyonu (mikrofon geviş akustiği, optik solunum BPM ve 17 günlük non-return takvimi) ile taranır.
+### 3.2. ReproScan Ovine (OviScan) ile Kapalı Döngü Üreme Yönetimi (Closed-Loop Lifecycle)
+ReproScan Bovine ve ReproScan Ovine sistemleri birbirini tamamlayan bir üreme döngüsü oluşturur:
+1. **Kızgınlık Tespiti ve Tohumlama (ReproScan Bovine):** Hayvan kızgınlığa girdiğinde sistem alarm üretir ve AM/PM kuralına göre tohumlama gerçekleştirilir.
+2. **Gebelik Ön Taraması (ReproScan Ovine - 30 ila 45 Gün Sonra):** Tohumlanan hayvanlar tohumlamadan 30-45 gün sonra harici prob gerektirmeyen multimodal sensör füzyonu (mikrofon geviş akustiği, optik solunum BPM ve 17 günlük non-return takvimi) ile taranır.
 3. **Karar Destek:** 
    * `HIGH (%70+)`: Gebe kabul edilir ve gebe rasyonuna geçiş planlanır.
-   * `LOW`: Boş kabul edilir ve derhal tekrar kızgınlık (Bovi-TailVision) izleme döngüsüne geri alınır.
+   * `LOW`: Boş kabul edilir ve derhal tekrar kızgınlık (ReproScan Bovine) izleme döngüsüne geri alınır.
 
 ---
 
 ## 4. UYGULAMA İÇİ KULLANIM KILAVUZU (OPERATIONAL MANUAL)
 
-### 4.1. Bovi-TailVision (Ahırdaki Kamera İstasyonu)
+### 4.1. ReproScan Bovine (Ahırdaki Kamera İstasyonu)
 1. **Montaj:** 
    * **Grup İzleme (Önerilen):** IP65 kutu, 3-4 durağın arkasındaki tavan kirişine $2.8\text{ m}$ yüksekliğe, ineklerin arkasından $3.0\text{ m}$ mesafeye, aşağıya $25^\circ$ açıyla monte edilir.
    * **Tek İnek İzleme:** İnek arkasından $1.5\text{ m}$ mesafeye, sırtın $25\text{ cm}$ üzerine $15^\circ$ açıyla monte edilir.
@@ -98,9 +98,9 @@ Bovi-TailVision ve OviScan sistemleri birbirini tamamlayan bir üreme döngüsü
 4. **Başlatma:** **"Sistemi Başlat"** butonuna basılır. Önizleme otomatik kapanır ve 24/7 çoklu analiz başlar.
 5. **Termal Koruma:** **"Ekranı Karart"** butonuna basıldığında ekran $0.0\text{f}$ parlaklığa iner ve siyah perde devreye girer. Tekrar arayüze dönmek için ekrana **çift tıklanır**.
 
-### 4.2. Bovi-Farmer (Çiftçinin Cep Telefonu)
+### 4.2. ReproScan Mobil (Çiftçinin Cep Telefonu)
 1. **Kurulum:** Çiftçinin günlük kullandığı Android telefona `farmer_app-debug.apk` yüklenir.
-2. **İlk Açılış:** Bildirim ve alarm izinleri onaylanır. Üst bardaki "Broker Bağlantısı: Aktif" ibaresi ve grup durak tablosu kontrol edilir.
+2. **İlk Açılış:** Bildirim ve alarm izinleri onaylanır. Üst bardaki "Broker Bağlantısı: Aktif" ibaresi ve grup durak tablosu kontrol edilir. Çift sekmeli arayüzden **ReproScan Bovine** ve **ReproScan Ovine** modülleri arasında geçiş yapılabilir.
 3. **Alarm Durumu:** Gruptaki herhangi bir inek kızgınlığa girdiğinde telefon yüksek sesli siren çalar, ekranı uyandırır ve **hangi duraktaki hangi ineğin kızgınlıkta olduğunu** bildirir.
 4. **Aksiyon:** Kart üzerindeki önerilen tohumlama saatinde veteriner/tohumlamacı çağrılır ve tohumlama bitince **"Tohumlama Yapıldı"** butonuna basılarak kayıt arşivlenir.
 

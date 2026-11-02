@@ -1,6 +1,6 @@
-# BOVI-TAILVISION: DONANIM MODİFİKASYON VE MONTAJ KILAVUZU
+# REPROSCAN: DONANIM MODİFİKASYON VE MONTAJ KILAVUZU
 
-Bu kılavuz, eski model bir Android akıllı telefonun ahır ortamında 7/24 kesintisiz ve yangın riski olmadan çalışabilmesi, tek veya **grup halindeki (3-6 durak)** inekleri yüksek doğrulukla izleyebilmesi için gerekli donanım modifikasyonlarını ve montaj geometrisini açıklar.
+Bu kılavuz, eski model bir Android akıllı telefonun ahır ortamında 7/24 kesintisiz ve yangın riski olmadan çalışabilmesi (**ReproScan Bovine** kamera istasyonu), tek veya **grup halindeki (3-6 durak)** inekleri yüksek doğrulukla izleyebilmesi için gerekli donanım modifikasyonlarını ve montaj geometrisini açıklar.
 
 ---
 

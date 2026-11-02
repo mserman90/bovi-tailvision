@@ -1,19 +1,19 @@
-# Bovi-TailVision & OviScan: Akıllı Ruminant Üreme ve Sürü Yönetim Platformu
+# ReproScan: Akıllı Ruminant Üreme ve Karar Destek Platformu (ReproScan AI)
 
-Bu proje; büyükbaş ve küçükbaş hayvancılıkta harici donanım maliyetlerini ortadan kaldırarak atıl ve standart Android akıllı telefonların yerleşik donanımlarını (kamera, mikrofon, ivmeölçer) yapay zeka ile buluşturan birleşik bir platformdur:
+**ReproScan**, büyükbaş ve küçükbaş hayvancılıkta harici donanım maliyetlerini ortadan kaldırarak atıl ve standart Android akıllı telefonların yerleşik donanımlarını (kamera, mikrofon, ivmeölçer) uç birim yapay zeka (Edge AI) ile buluşturan birleşik bir üreme karar destek platformudur:
 
-1. 🐄 **Bovi-TailVision (Büyükbaş Sığır):** Ahırda durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
-2. 🐑 **OviScan (Küçükbaş Koyun & Keçi):** Harici prob gerektirmeksizin dahili telefon sensörleri (mikrofon geviş akustiği, kamera optik solunum BPM'i ve ivmeölçer) ile tohumlama sonrası **gebelik ön taraması, BCS kondisyon ve karar destek** sağlar ([OviScan GitHub Deposu](https://github.com/mserman90/oviscan-android)).
-3. 📱 **Bovi-Farmer (Birleşik Çiftçi Uygulaması):** Çiftçinin cebindeki tek bir mobil uygulamada hem sığır kızgınlık alarmlarını sesli sirenle karşılar hem de koyun gebelik ön tarama sonuçlarını yönetir.
+1. 🐄 **ReproScan Bovine (Büyükbaş Sığır):** Ahırda durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
+2. 🐑 **ReproScan Ovine (Küçükbaş Koyun & Keçi):** Harici prob gerektirmeksizin dahili telefon sensörleri (mikrofon geviş akustiği, kamera optik solunum BPM'i ve ivmeölçer) ile tohumlama sonrası **gebelik ön taraması, BCS kondisyon ve karar destek** sağlar ([OviScan Entegrasyonu](https://mserman90.github.io/oviscan-android/)).
+3. 📱 **ReproScan Mobil (Birleşik Çiftçi Uygulaması):** Çiftçinin cebindeki tek bir mobil uygulamada hem sığır kızgınlık alarmlarını sesli sirenle karşılar hem de koyun gebelik ön tarama sonuçlarını yönetir.
 
 ---
 
 ## 📁 Proje Dizin Yapısı
 
 ```
-bovi-tailvision/
+reproscan/
 ├── android/                   # Multi-Module Android Projesi
-│   ├── app/                   # [UÇ NOKTA KAMERA CİHAZI] Ahırda gruba bakan telefon
+│   ├── app/                   # [REPROSCAN BOVINE] Ahırda gruba bakan sabit kamera istasyonu
 │   │   ├── src/main/java/com/bovivision/estrus/
 │   │   │   ├── MainActivity.kt               # Kontrol & termal ekran karartma
 │   │   │   ├── analyzer/
@@ -25,9 +25,9 @@ bovi-tailvision/
 │   │   │   └── network/                      # Uç birim MQTT yayıncısı
 │   │   └── src/main/assets/bovi_tail_pose.tflite
 │   │
-│   ├── farmer_app/            # [BİRLEŞİK ÇİFTÇİ CEP UYGULAMASI]
+│   ├── farmer_app/            # [REPROSCAN MOBIL] Çiftçi Cep Takip & OviScan Modülü
 │   │   ├── src/main/java/com/bovivision/farmer/
-│   │   │   ├── FarmerMainActivity.kt         # Çift sekmeli arayüz (Bovi + Ovi)
+│   │   │   ├── FarmerMainActivity.kt         # Çift sekmeli arayüz (Bovine + Ovine)
 │   │   │   ├── oviscan/                      # [OVISCAN ENTEGRASYONU]
 │   │   │   │   ├── domain/model/             # Gebelik risk seviyeleri & sensör batch'i
 │   │   │   │   └── ml/LateFusionClassifier.kt # Çok modlu gebelik ön tarama füzyonu

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-BOVI-OVI ÇİFTLİK MERKEZİ SUNUCU VE BİRLEŞİK BİLDİRİM KÖPRÜSÜ
-Ahır yerel ağındaki cihazlardan gelen:
-1. Bovi-TailVision (Sığır Kızgınlık / Östrus Alarmları)
-2. OviScan (Koyun Gebelik Ön Tarama Sonuçları)
+REPROSCAN ÇİFTLİK MERKEZİ SUNUCU VE BİRLEŞİK BİLDİRİM KÖPRÜSÜ
+Akıllı Ruminant Üreme ve Karar Destek Platformu:
+1. ReproScan Bovine (Sığır Kızgınlık / Östrus Alarmları)
+2. ReproScan Ovine (Koyun Gebelik Ön Tarama Sonuçları)
 verilerini toplar, çiftçinin mobil uygulamasına (MQTT) ve Telegram'a anlık iletir.
 """
 
@@ -18,7 +18,7 @@ BROKER_PORT = int(os.environ.get("BROKER_PORT", 1883))
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-# MQTT Konuları (Bovi + Ovi)
+# MQTT Konuları (Bovine + Ovine)
 TOPIC_BOVI_TELEMETRY = "farm/tailvision/+/telemetry"
 TOPIC_BOVI_ALERT = "farm/tailvision/+/estrus_alert"
 TOPIC_OVI_SCREENING = "farm/oviscan/+/pregnancy_screen"
@@ -45,11 +45,11 @@ def send_telegram_alert(msg_text):
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print(f"[BAŞARILI] Bovi-Ovi MQTT Broker'a bağlandı ({BROKER_HOST}:{BROKER_PORT})")
+        print(f"[BAŞARILI] ReproScan MQTT Broker'a bağlandı ({BROKER_HOST}:{BROKER_PORT})")
         client.subscribe(TOPIC_BOVI_TELEMETRY)
         client.subscribe(TOPIC_BOVI_ALERT)
         client.subscribe(TOPIC_OVI_SCREENING)
-        print(f"[DİNLENİYOR] Sığır ve Koyun üreme kanalları aktif.")
+        print(f"[DİNLENİYOR] ReproScan Bovine & Ovine üreme kanalları aktif.")
     else:
         print(f"[HATA] Bağlantı başarısız, Kod: {rc}")
 
@@ -75,21 +75,21 @@ def handle_bovi_alert(data):
     timing_text = calculate_insemination_window(timestamp)
 
     print("\n" + "=" * 75)
-    print(f"🚨 [BOVI-TAILVISION: SIĞIR KIZGINLIK ALARMI] İnek No: {cow_id}")
+    print(f"🚨 [REPROSCAN BOVINE: SIĞIR KIZGINLIK ALARMI] İnek No: {cow_id}")
     print(f"📈 5 Dakikalık Açık Kalma Oranı: %{exposure_rate:.1f} | Süre: {duration_sec:.1f} sn")
     print(f"⏰ AM/PM Tohumlama Penceresi: {timing_text}")
     print("=" * 75 + "\n")
 
     msg = (
-        f"🚨 *BOVI-TAILVISION KIZGINLIK ALARMI*\n\n"
+        f"🚨 *REPROSCAN BOVINE KIZGINLIK ALARMI*\n\n"
         f"🐄 *İnek No:* `{cow_id}`\n"
         f"📊 *Vulva Açık Kalma:* %{exposure_rate:.1f}\n"
         f"⏰ *Tohumlama Zamanı:*\n{timing_text}"
     )
     send_telegram_alert(msg)
 
-    with open("farm_unified_reproductive_log.csv", "a", encoding="utf-8") as f:
-        f.write(f"{datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')},BOVI_ESTRUS,{cow_id},%{exposure_rate:.1f},{timing_text}\n")
+    with open("reproscan_reproductive_log.csv", "a", encoding="utf-8") as f:
+        f.write(f"{datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')},BOVINE_ESTRUS,{cow_id},%{exposure_rate:.1f},{timing_text}\n")
 
 def handle_ovi_screen(data):
     ear_tag = data.get("ear_tag", "TR-06-KOYUN-01")
@@ -98,36 +98,35 @@ def handle_ovi_screen(data):
     action = data.get("recommended_action", "Gebe rasyonuna geçiş planlayınız.")
 
     print("\n" + "-" * 75)
-    print(f"🐑 [OVISCAN: KOYUN GEBELİK ÖN TARAMASI] Küpe No: {ear_tag}")
+    print(f"🐑 [REPROSCAN OVINE: KOYUN GEBELİK ÖN TARAMASI] Küpe No: {ear_tag}")
     print(f"📊 Gebelik Olasılığı: %{prob_pct:.1f} ({risk_level})")
     print(f"💡 Öneri: {action}")
     print("-" * 75 + "\n")
 
     msg = (
-        f"🐑 *OVISCAN GEBELİK ÖN TARAMASI*\n\n"
+        f"🐑 *REPROSCAN OVINE GEBELİK ÖN TARAMASI*\n\n"
         f"🏷️ *Koyun Küpe No:* `{ear_tag}`\n"
         f"📊 *Gebelik Olasılığı:* %{prob_pct:.1f} ({risk_level})\n"
         f"💡 *Öneri:* {action}"
     )
     send_telegram_alert(msg)
 
-    with open("farm_unified_reproductive_log.csv", "a", encoding="utf-8") as f:
-        f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')},OVI_PREGNANCY,{ear_tag},%{prob_pct:.1f},{risk_level}\n")
+    with open("reproscan_reproductive_log.csv", "a", encoding="utf-8") as f:
+        f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')},OVINE_PREGNANCY,{ear_tag},%{prob_pct:.1f},{risk_level}\n")
 
 def handle_telemetry(data):
     cow_id = data.get("cow_id")
     metrics = data.get("metrics", {})
-    health = data.get("health", {})
     fps = metrics.get("fps", 0.0)
     angle = metrics.get("tail_angle_deg", 0.0)
     print(f"[{time.strftime('%H:%M:%S')}] Telemetri -> İnek: {cow_id} | FPS: {fps:.1f} | Açı: {angle:.1f}°")
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="BoviOviCentralServer")
+    client = mqtt.Client(client_id="ReproScanCentralServer")
     client.on_connect = on_connect
     client.on_message = on_message
 
-    print("[BAŞLATILIYOR] Bovi-Ovi Akıllı Ruminant Çiftlik Sunucusu Dinleme Modunda...")
+    print("[BAŞLATILIYOR] ReproScan Akıllı Ruminant Çiftlik Sunucusu Dinleme Modunda...")
     try:
         client.connect(BROKER_HOST, BROKER_PORT, 60)
         client.loop_forever()

@@ -1,16 +1,16 @@
-# BOVI-TAILVISION: SİSTEM MİMARİSİ VE TEKNİK TASARIM DOKÜMANI
+# REPROSCAN: SİSTEM MİMARİSİ VE TEKNİK TASARIM DOKÜMANI
 
 ---
 
 ### 1. GENEL MİMARİ VE ÇOKLU İNEK (GRUP) TAKİBİ
 
-Bovi-TailVision, tek bir eski model Android telefonun geniş açılı kamerasıyla ahırdaki bir grup ineği (3-6 durak / yemlik kilit sırası) aynı anda izleyebilir. Derin öğrenme çıkarımı (`YOLO11n-pose INT8`) kare başına **tek bir geçişte (Single Inference Pass)** tüm ineklerin iskeletlerini tespit eder; ardından uzamsal durak eşleme motoru (`MultiCowTracker`) her hayvanı kendi durağına zimmetler.
+ReproScan, tek bir eski model Android telefonun geniş açılı kamerasıyla ahırdaki bir grup ineği (3-6 durak / yemlik kilit sırası) aynı anda izleyebilir (**ReproScan Bovine**). Derin öğrenme çıkarımı (`YOLO11n-pose INT8`) kare başına **tek bir geçişte (Single Inference Pass)** tüm ineklerin iskeletlerini tespit eder; ardından uzamsal durak eşleme motoru (`MultiCowTracker`) her hayvanı kendi durağına zimmetler.
 
-Ayrıca sistem, **OviScan (Küçükbaş Gebelik Ön Tarama ve Karar Destek)** sistemi ile tam entegre çalışarak çiftlikteki hem büyükbaş (sığır kızgınlık & tohumlama) hem de küçükbaş (koyun gebelik ön tarama) süreçlerini tek bir IoT broker ve çiftçi mobil uygulamasında birleştirir.
+Ayrıca platform, **ReproScan Ovine** ([OviScan Entegrasyonu](https://mserman90.github.io/oviscan-android/)) modülü ile tam entegre çalışarak çiftlikteki hem büyükbaş (sığır kızgınlık & tohumlama) hem de küçükbaş (koyun gebelik ön tarama) süreçlerini tek bir IoT broker ve **ReproScan Mobil** çiftçi uygulamasında birleştirir.
 
 ```mermaid
 flowchart TD
-    subgraph BoviEdge ["Bovi-TailVision: Ahırdaki Sabit Kamera (Grup İzleme)"]
+    subgraph BoviEdge ["ReproScan Bovine: Ahırdaki Sabit Kamera (Grup İzleme)"]
         Cam[Kamera Donanımı 15 FPS - Geniş Açı] --> Pre[Zero-Alloc Preprocessor]
         Pre --> TFLite[YOLO11n-Pose INT8: Çoklu Tespit]
         TFLite --> MOT[MultiCowTracker: Uzamsal Durak Eşleme]
@@ -20,7 +20,7 @@ flowchart TD
         Cow2 -- R_open >= %65 --> AlertBovi[Kızgınlık Alarmı: Durak 2]
     end
 
-    subgraph OviModule ["OviScan: El Tipi Mobil Gebelik Ön Tarama"]
+    subgraph OviModule ["ReproScan Ovine (OviScan): El Tipi Mobil Gebelik Ön Tarama"]
         Sensors[Mikrofon + İvmeölçer + Optik Solunum] --> Fusion[LateFusionClassifier: Çok Modlu Füzyon]
         Calendar[17 Günlük Non-Return Takvimi] --> Fusion
         Fusion --> ScreenResult[Gebelik Ön Tarama Kararı: %84 Gebe]
@@ -32,9 +32,9 @@ flowchart TD
         DB[(farm_unified_reproductive_log.csv)]
     end
 
-    subgraph FarmerMobile ["Bovi-Ovi Çiftçi Takip Uygulaması (Tek Ekran)"]
+    subgraph FarmerMobile ["ReproScan Mobil: Birleşik Çiftçi Takip Uygulaması (Tek Ekran)"]
         Listener[FarmerAlertListenerService]
-        UI[FarmerMainActivity: Bovi + Ovi Çift Sekmeli Panel]
+        UI[FarmerMainActivity: Bovine + Ovine Çift Sekmeli Panel]
         Siren[Sesli Siren & Titreşim Alarmı]
     end
 

@@ -208,7 +208,7 @@ class FarmerAlertListenerService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val statusChannel = NotificationChannel(
                 FOREGROUND_CHANNEL_ID,
-                "Bovi-Farmer Durum Servisi",
+                "ReproScan Takip Servisi",
                 NotificationManager.IMPORTANCE_LOW
             )
 
@@ -240,7 +240,7 @@ class FarmerAlertListenerService : LifecycleService() {
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         return NotificationCompat.Builder(this, FOREGROUND_CHANNEL_ID)
-            .setContentTitle("Bovi-Farmer Takip Aktif")
+            .setContentTitle("ReproScan Takip Aktif")
             .setContentText(status)
             .setSmallIcon(R.drawable.badge_alert_bg)
             .setContentIntent(pendingIntent)

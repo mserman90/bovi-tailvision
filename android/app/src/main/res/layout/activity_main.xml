@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="BOVI-TAILVISION EDGE AI"
+            android:text="REPROSCAN KAMERA İSTASYONU"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />

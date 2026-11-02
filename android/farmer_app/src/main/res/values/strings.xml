@@ -1,12 +1,12 @@
 <resources>
-    <string name="farmer_app_name">Bovi-Farmer (Çiftçi Takip)</string>
-    <string name="title_dashboard">Kızgınlık (Östrus) Takip Paneli</string>
-    <string name="status_connected">Broker Bağlantısı: Aktif (Canlı İzleme)</string>
+    <string name="farmer_app_name">ReproScan Çiftçi</string>
+    <string name="title_dashboard">ReproScan Üreme &amp; Sürü Takip Paneli</string>
+    <string name="status_connected">Broker Bağlantısı: Aktif (Büyükbaş + Küçükbaş Canlı)</string>
     <string name="status_disconnected">Broker Bağlantısı: Kesildi (Yeniden bağlanılıyor...)</string>
     <string name="btn_refresh">Yenile</string>
-    <string name="lbl_alerts_heading">Gelen Kızgınlık Alarmları</string>
+    <string name="lbl_alerts_heading">Gelen Kızgınlık Alarmları (Büyükbaş)</string>
     <string name="lbl_no_alerts">Henüz aktif bir kızgınlık uyarısı yok. Sürü normal durumda.</string>
     <string name="btn_acknowledge">Tohumlama Planlandı</string>
-    <string name="channel_alert_name">Sığır Kızgınlık Alarmları</string>
-    <string name="channel_alert_desc">Yüksek öncelikli kızgınlık tespit bildirimleri ve sesli uyarılar</string>
+    <string name="channel_alert_name">ReproScan Alarmları</string>
+    <string name="channel_alert_desc">Yüksek öncelikli kızgınlık ve gebelik ön tarama bildirimleri</string>
 </resources>
