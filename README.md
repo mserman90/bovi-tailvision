@@ -6,9 +6,11 @@
 
 **ReproScan**, büyükbaş ve küçükbaş hayvancılıkta harici donanım maliyetlerini ortadan kaldırarak atıl ve standart Android akıllı telefonların yerleşik donanımlarını (kamera, mikrofon, ivmeölçer) uç birim yapay zeka (Edge AI) ile buluşturan birleşik bir üreme karar destek platformudur:
 
-1. 🐄 **ReproScan Bovine (Büyükbaş Sığır):** Ahırda durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
+1. 🐄 **ReproScan Bovine (Büyükbaş Sığır):**
+   * **Sabit Ahır Kamerası:** Durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
+   * **Cep Telefonuyla Sığır Gebelik Taraması:** Harici prob gerektirmeksizin tohumlama sonrası 21 ve 42 günlük non-return takvimi, rumen geviş akustiği (45-60 çiğneme/dk), CameraX açlık çukuru optik solunumu ve vulva morfolojisi ile cep telefonundan **erken sığır gebelik ön taraması ve veteriner teyit desteği** sunar.
 2. 🐑 **ReproScan Ovine (Küçükbaş Koyun & Keçi):** Harici prob gerektirmeksizin dahili telefon sensörleri (mikrofon geviş akustiği, kamera optik solunum BPM'i ve ivmeölçer) ile tohumlama sonrası **gebelik ön taraması, BCS kondisyon ve karar destek** sağlar ([OviScan Entegrasyonu](https://mserman90.github.io/oviscan-android/)).
-3. 📱 **ReproScan Mobil (Birleşik Çiftçi Uygulaması):** Çiftçinin cebindeki tek bir mobil uygulamada hem sığır kızgınlık alarmlarını sesli sirenle karşılar hem de koyun gebelik ön tarama sonuçlarını yönetir.
+3. 📱 **ReproScan Mobil (Birleşik Çiftçi Uygulaması):** Çiftçinin cebindeki tek bir mobil uygulamada hem ahır kızgınlık alarmlarını sesli sirenle karşılar hem de hem sığır hem de koyun gebelik ön tarama testlerini yönetir.
 
 ---
 
@@ -29,10 +31,18 @@ reproscan/
 │   │   │   └── network/                      # Uç birim MQTT yayıncısı
 │   │   └── src/main/assets/bovi_tail_pose.tflite
 │   │
-│   ├── farmer_app/            # [REPROSCAN MOBIL] Çiftçi Cep Takip & OviScan Modülü
+│   ├── farmer_app/            # [REPROSCAN MOBIL] Çiftçi Cep Takip, Sığır & Koyun Gebelik Modülü
 │   │   ├── src/main/java/com/bovivision/farmer/
 │   │   │   ├── FarmerMainActivity.kt         # Çift sekmeli arayüz (Bovine + Ovine)
-│   │   │   ├── oviscan/                      # [OVISCAN ENTEGRASYONU]
+│   │   │   ├── boviscan/                     # [SIĞIR GEBELİK ÖN TARAMA MODÜLÜ]
+│   │   │   │   ├── domain/model/             # Sığır risk seviyeleri & sensör batch'i
+│   │   │   │   └── ml/BovineLateFusionClassifier.kt # 21/42 günlük non-return & geviş füzyonu
+│   │   │   ├── oviscan/                      # [KOYUN GEBELİK ÖN TARAMA MODÜLÜ]
+│   │   │   │   ├── domain/model/             # Gebelik risk seviyeleri & sensör batch'i
+│   │   │   │   └── ml/LateFusionClassifier.kt # Çok modlu gebelik ön tarama füzyonu
+│   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi
+│   │   │   └── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
+│   │   └── src/main/res/layout/activity_farmer_main.xml
 │   │   │   │   ├── domain/model/             # Gebelik risk seviyeleri & sensör batch'i
 │   │   │   │   └── ml/LateFusionClassifier.kt # Çok modlu gebelik ön tarama füzyonu
 │   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi

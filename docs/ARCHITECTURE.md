@@ -20,10 +20,16 @@ flowchart TD
         Cow2 -- R_open >= %65 --> AlertBovi[Kızgınlık Alarmı: Durak 2]
     end
 
-    subgraph OviModule ["ReproScan Ovine (OviScan): El Tipi Mobil Gebelik Ön Tarama"]
-        Sensors[Mikrofon + İvmeölçer + Optik Solunum] --> Fusion[LateFusionClassifier: Çok Modlu Füzyon]
+    subgraph BoviMobile ["ReproScan Bovine: Elde Sığır Gebelik Taraması"]
+        BoviSensors[Mikrofon Geviş + Kamera Açlık Çukuru Solunum + Vulva Muayenesi] --> BoviFusion[BovineLateFusionClassifier]
+        BoviCalendar[21 ve 42 Günlük Sığır Non-Return Takvimi] --> BoviFusion
+        BoviFusion --> BoviPregResult[Sığır Gebelik Kararı: %88 Gebe]
+    end
+
+    subgraph OviModule ["ReproScan Ovine (OviScan): El Tipi Koyun Gebelik Taraması"]
+        Sensors[Mikrofon Geviş + İvmeölçer + Optik Solunum] --> Fusion[LateFusionClassifier: Çok Modlu Füzyon]
         Calendar[17 Günlük Non-Return Takvimi] --> Fusion
-        Fusion --> ScreenResult[Gebelik Ön Tarama Kararı: %84 Gebe]
+        Fusion --> ScreenResult[Koyun Gebelik Kararı: %84 Gebe]
     end
 
     subgraph FarmServer ["Ahır & Ağıl Yerel Sunucusu (MQTT Broker)"]
@@ -39,12 +45,14 @@ flowchart TD
     end
 
     AlertBovi -->|QoS 2: farm/tailvision/COW_ID/estrus_alert| Broker
+    BoviPregResult -->|QoS 1: farm/boviscan/COW_ID/pregnancy_screen| Broker
     ScreenResult -->|QoS 1: farm/oviscan/TAG/pregnancy_screen| Broker
     Broker --> Bridge
     Bridge --> DB
     Broker -->|Canlı Push| Listener
     Listener --> Siren
     Listener --> UI
+    BoviPregResult --> UI
 ```
 
 ---

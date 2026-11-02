@@ -13,6 +13,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bovivision.farmer.adapter.AlertAdapter
+import com.bovivision.farmer.boviscan.domain.model.BovineMeasurementMode
+import com.bovivision.farmer.boviscan.domain.model.BovinePregnancyRiskLevel
+import com.bovivision.farmer.boviscan.domain.model.BovineSensorDataBatch
+import com.bovivision.farmer.boviscan.ml.BovineLateFusionClassifier
 import com.bovivision.farmer.databinding.ActivityFarmerMainBinding
 import com.bovivision.farmer.model.FarmerAlertModel
 import com.bovivision.farmer.oviscan.domain.model.MeasurementMode
@@ -43,6 +47,7 @@ class FarmerMainActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupListeners()
+        setupBovinePregnancyIntegration()
         setupOviScanIntegration()
         checkPermissionsAndStart()
     }
@@ -57,7 +62,7 @@ class FarmerMainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Sekme Değiştirici: Büyükbaş (Bovi) vs Küçükbaş (OviScan)
+        // Ana Sekme Değiştirici: Büyükbaş (Bovi) vs Küçükbaş (OviScan)
         binding.btnTabBovi.setOnClickListener {
             binding.layoutBoviView.visibility = View.VISIBLE
             binding.layoutOviView.visibility = View.GONE
@@ -76,7 +81,26 @@ class FarmerMainActivity : AppCompatActivity() {
             binding.btnTabBovi.setTextColor(Color.WHITE)
         }
 
-        // Bovi-TailVision Servisinden Canlı Alarm Dinleme
+        // Bovine Alt Sekme Değiştirici: Ahır Alarmları vs Elde Gebelik Taraması
+        binding.btnSubTabBoviBarn.setOnClickListener {
+            binding.layoutBoviBarnAlarms.visibility = View.VISIBLE
+            binding.layoutBoviPregnancyScan.visibility = View.GONE
+            binding.btnSubTabBoviBarn.setBackgroundColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviBarn.setTextColor(Color.WHITE)
+            binding.btnSubTabBoviPregnancy.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnSubTabBoviPregnancy.setTextColor(Color.parseColor("#1B5E20"))
+        }
+
+        binding.btnSubTabBoviPregnancy.setOnClickListener {
+            binding.layoutBoviBarnAlarms.visibility = View.GONE
+            binding.layoutBoviPregnancyScan.visibility = View.VISIBLE
+            binding.btnSubTabBoviPregnancy.setBackgroundColor(Color.parseColor("#1B5E20"))
+            binding.btnSubTabBoviPregnancy.setTextColor(Color.WHITE)
+            binding.btnSubTabBoviBarn.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnSubTabBoviBarn.setTextColor(Color.parseColor("#1B5E20"))
+        }
+
+        // Ahır Kamera İstasyonundan Canlı Alarm Dinleme
         FarmerAlertListenerService.onAlertReceivedListener = { alert ->
             runOnUiThread {
                 adapter.addAlert(alert)
@@ -88,13 +112,65 @@ class FarmerMainActivity : AppCompatActivity() {
         FarmerAlertListenerService.onConnectionStateChanged = { connected ->
             runOnUiThread {
                 if (connected) {
-                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Aktif (Bovi + Ovi Canlı)"
+                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Aktif (ReproScan Canlı)"
                     binding.tvConnectionStatus.setTextColor(Color.parseColor("#C8E6C9"))
                 } else {
                     binding.tvConnectionStatus.text = "Ahır IoT Broker: Bağlantı Kesildi"
                     binding.tvConnectionStatus.setTextColor(Color.parseColor("#FFCDD2"))
                 }
             }
+        }
+    }
+
+    private fun setupBovinePregnancyIntegration() {
+        // Sığır Cep Telefonuyla Gebelik Ön Tarama Tetikleyicisi
+        binding.btnRunBoviPregnancyScan.setOnClickListener {
+            val tag = binding.etCowTag.text.toString().trim().ifEmpty { "TR-06-3842" }
+            val days = binding.etCowInsemDays.text.toString().trim().toIntOrNull() ?: 35
+
+            // Telefon sensör verileri batch'i oluştur
+            val batch = BovineSensorDataBatch(
+                earTag = tag,
+                daysSinceInsemination = days,
+                mode = BovineMeasurementMode.HANDHELD_RAPID_SCAN,
+                chewsPerMinute = 53,
+                audioSnrDb = 13.8f,
+                vocalizationDetected = false,
+                cameraRespirationBpm = 21.5f,
+                vulvaTightnessScore = 0.88f,
+                motionRestingIndex = 0.82f,
+                hadObservedEstrusSinceAI = false
+            )
+
+            // Sığır Multimodal Late Fusion Sınıflandırıcıyı Çalıştır
+            val result = BovineLateFusionClassifier.classify(batch)
+
+            // UI'da Sonucu Göster
+            binding.cardBoviPregnancyResult.visibility = View.VISIBLE
+            binding.tvBoviCowTagTitle.text = result.earTag
+            binding.tvBoviProbabilityBadge.text = String.format("%%%d GEBELİK OLASILIĞI", (result.probability * 100).toInt())
+
+            when (result.riskLevel) {
+                BovinePregnancyRiskLevel.HIGH -> {
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#2E7D32"))
+                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#2E7D32")
+                }
+                BovinePregnancyRiskLevel.INCONCLUSIVE -> {
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#F57F17"))
+                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#F57F17")
+                }
+                BovinePregnancyRiskLevel.LOW -> {
+                    binding.tvBoviProbabilityBadge.setBackgroundColor(Color.parseColor("#C62828"))
+                    binding.cardBoviPregnancyResult.strokeColor = Color.parseColor("#C62828")
+                }
+            }
+
+            binding.tvBoviRiskDesc.text = result.riskLevel.descriptionTr
+            binding.tvBoviUltrasoundWindow.text = "🎯 Ultrason Zamanı: " + result.optimalUltrasoundWindow
+            binding.tvBoviRecommendation.text = "Öneri: " + result.veterinaryRecommendation
+            binding.tvBoviXaiReasons.text = result.xaiReasons.joinToString("\n• ", prefix = "• ")
+
+            Toast.makeText(this, "${result.earTag} için sığır gebelik taraması tamamlandı.", Toast.LENGTH_SHORT).show()
         }
     }
 

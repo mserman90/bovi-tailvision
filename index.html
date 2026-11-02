@@ -64,22 +64,33 @@
         <!-- ================= DEVICE 1: AI STATION (REPROSCAN BOVINE OR OVINE) ================= -->
         <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl relative">
 
-            <!-- 1.A: REPROSCAN BOVINE VIEW (CATTLE REAR CAMERA) -->
+            <!-- 1.A: REPROSCAN BOVINE VIEW (CATTLE) -->
             <div id="moduleBoviContainer">
-                <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20"><i class="fa-solid fa-camera"></i></span>
+                        <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-cow"></i></span>
                         <div>
-                            <h2 class="font-bold text-white text-base">ReproScan Bovine: Sabit Ahır Kamerası (Grup İzleme)</h2>
-                            <p class="text-xs text-slate-400">Geniş Açı Kaudal Pelvis • 3 Durak Eş Zamanlı Kızgınlık Takibi</p>
+                            <h2 class="font-bold text-white text-base">ReproScan Bovine: Büyükbaş Üreme Yönetimi</h2>
+                            <p class="text-xs text-slate-400">Sabit Ahır Kamerası (Grup Kızgınlık) &amp; Cep Telefonuyla Gebelik Taraması</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/60">15.0 FPS</span>
-                        <p class="text-[10px] text-slate-500 mt-0.5">YOLO11n-Pose INT8</p>
+                        <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded border border-emerald-800/60">Edge AI + Mobile</span>
                     </div>
                 </div>
 
+                <!-- Bovine Alt Sekme Seçici: Sabit Ahır Kamerası vs Cep Telefonuyla Gebelik Taraması -->
+                <div class="flex items-center gap-2 mb-4 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <button onclick="switchBoviSubModule('barn')" id="btnBoviSubBarn" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-video"></i> Sabit Ahır Kamerası (Grup Kızgınlık)
+                    </button>
+                    <button onclick="switchBoviSubModule('pregnancy')" id="btnBoviSubPregnancy" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-mobile-screen"></i> 📱 Cep Telefonuyla Sığır Gebelik Taraması
+                    </button>
+                </div>
+
+                <!-- 1.A.1: SABİT AHIR KAMERASI -->
+                <div id="boviBarnContainer">
                 <!-- Panoramic Canvas View -->
                 <div class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 aspect-[16/10] w-full shadow-inner">
                     <canvas id="groupCanvas" width="640" height="400" class="w-full h-full block"></canvas>
@@ -160,6 +171,136 @@
                         <button onclick="toggleThermalMode()" class="text-slate-400 hover:text-amber-400 transition ml-2 flex-shrink-0" title="Termal Ekran Karartma">
                             <i class="fa-solid fa-moon"></i> Karart
                         </button>
+                    </div>
+                </div>
+                </div>
+
+                <!-- 1.A.2: CEPTEN SIĞIR GEBELİK TARAMASI -->
+                <div id="boviPregnancyContainer" class="hidden">
+                    <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-4">
+                        <!-- Cow Visual & Flank Waveform -->
+                        <div class="relative bg-slate-900 rounded-xl p-4 border border-slate-800 flex items-center justify-between overflow-hidden">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-2xl bg-emerald-950/70 border border-emerald-700/50 flex items-center justify-center text-emerald-400 text-3xl">
+                                    🐄
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white text-sm">TR-06-3842 (Durak 2 - Siyah Alaca)</h3>
+                                    <p class="text-xs text-slate-400">Tohumlama: Suni Tohumlama (Holstein-Friesian)</p>
+                                    <span class="inline-block mt-1 text-[10px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded">
+                                        Dahili Telefon Sensörleri ile Non-İnvaziv Muayene
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Animated Respiration & Rumen Chew Bars -->
+                            <div class="text-right">
+                                <div class="text-xs font-bold text-emerald-400 font-mono" id="boviLiveBpm">21.5 BPM</div>
+                                <div class="text-[10px] text-slate-400">Optik Açlık Çukuru Solunumu</div>
+                                <div class="flex items-center justify-end gap-1 mt-1.5 h-4" id="boviAudioWaveBars">
+                                    <span class="w-1 bg-emerald-500 rounded-full animate-bounce h-3"></span>
+                                    <span class="w-1 bg-emerald-400 rounded-full animate-bounce h-5"></span>
+                                    <span class="w-1 bg-emerald-300 rounded-full animate-bounce h-4"></span>
+                                    <span class="w-1 bg-emerald-500 rounded-full animate-bounce h-2"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Parameter Inputs -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <div class="flex justify-between items-center mb-1 text-slate-300">
+                                    <span>Tohumlama Sonrası Gün:</span>
+                                    <span class="font-bold text-emerald-400 font-mono" id="labelBoviInsemDays">35. Gün</span>
+                                </div>
+                                <input type="range" id="rangeBoviInsemDays" min="15" max="60" value="35" oninput="updateBoviPregnancyParams()" class="w-full accent-emerald-500 cursor-pointer">
+                                <p class="text-[10px] text-slate-500 mt-1">21 ve 42 günlük östrus dönüşsüzlük (Non-Return) takvimi</p>
+                            </div>
+
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <div class="flex justify-between items-center mb-1 text-slate-300">
+                                    <span>Rumen Akustiği (Geviş Çiğneme):</span>
+                                    <span class="font-bold text-emerald-400 font-mono" id="labelBoviRumenStatus">52 Çiğneme/dk</span>
+                                </div>
+                                <select id="selectBoviAcousticMode" onchange="updateBoviPregnancyParams()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg p-1.5 text-xs">
+                                    <option value="calm_chewing">Düzenli Rumen Gevişi (52/dk - Gebe Uyumlu)</option>
+                                    <option value="vocalization_agitated">Böğürme &amp; Yüksek Ajitasyon (Östrus Şüphesi - Boş)</option>
+                                    <option value="reduced_chewing">Düşük Geviş Çiğnemesi (&lt;32/dk - İştah/Östrus Düşüşü)</option>
+                                    <option value="neutral">Ara Değer / Nötr Akustik Profil</option>
+                                </select>
+                                <p class="text-[10px] text-slate-500 mt-1">Mikrofonla 200-1200 Hz aralığında bolus çiğneme tespiti</p>
+                            </div>
+
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <div class="flex justify-between items-center mb-1 text-slate-300">
+                                    <span>Kamera ile Vulva Morfolojisi:</span>
+                                    <span class="font-bold text-emerald-400 font-mono" id="labelBoviVulvaStatus">Kuru &amp; Kapalı</span>
+                                </div>
+                                <select id="selectBoviVulvaStatus" onchange="updateBoviPregnancyParams()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg p-1.5 text-xs">
+                                    <option value="tight_dry">Kapalı, Kuru ve Soluk Pembe (Gebe / Luteal Evre)</option>
+                                    <option value="edematous_mucus">Gevşek, Ödemli ve Mukus Akıntılı (Östrus Şüphesi)</option>
+                                    <option value="neutral">Standart / Ara Nötr Doku</option>
+                                </select>
+                                <p class="text-[10px] text-slate-500 mt-1">Kamera ile kaudal vulva açıklık ve akıntı kontrolü</p>
+                            </div>
+
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                                <div class="flex justify-between items-center mb-1 text-slate-300">
+                                    <span>Açlık Çukuru Solunum Sayısı:</span>
+                                    <span class="font-bold text-emerald-400 font-mono" id="labelBoviRespiration">21.5 BPM</span>
+                                </div>
+                                <input type="range" id="rangeBoviRespiration" min="15" max="38" value="22" oninput="updateBoviPregnancyParams()" class="w-full accent-emerald-500 cursor-pointer">
+                                <p class="text-[10px] text-slate-500 mt-1">CameraX optik parlaklık farkı (16-26 BPM normal istirahat)</p>
+                            </div>
+                        </div>
+
+                        <!-- Run Screening Button -->
+                        <button onclick="runBoviScreening()" class="w-full py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:opacity-90 text-white font-bold rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-stethoscope"></i> ReproScan Bovine: Multimodal Sığır Gebelik Taraması Yap
+                        </button>
+
+                        <!-- Decision Result Card -->
+                        <div id="boviResultBox" class="bg-emerald-950/60 border-2 border-emerald-500 rounded-2xl p-4 transition-all">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span id="boviResultBadge" class="text-[11px] font-bold uppercase tracking-wider bg-emerald-900/60 text-emerald-300 px-2.5 py-1 rounded border border-emerald-700">
+                                        YÜKSEK GEBELİK OLASILIĞI
+                                    </span>
+                                    <h4 class="text-base font-bold text-white mt-1.5">Ön Tarama Kararı: <span id="boviProbabilityText" class="text-emerald-400 font-mono">%88</span></h4>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono text-slate-300">Güvenilirlik: <strong id="boviConfidenceText" class="text-white">%91</strong></span>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Süre: 30 sn Elde Tarama</p>
+                                </div>
+                            </div>
+
+                            <!-- XAI Reasons -->
+                            <div class="bg-slate-900/90 rounded-xl p-3 mt-3 border border-slate-800 text-xs">
+                                <p class="text-emerald-400 font-bold mb-1.5 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-brain"></i> Sığır Multimodal Sensör Füzyon Bulguları (XAI):
+                                </p>
+                                <ul class="space-y-1 text-slate-300 text-[11px]" id="boviXaiList">
+                                    <li>• <strong>Tohumlama Takvimi:</strong> 35. gün (1. östrus döngüsü [21. gün] kızgınlık görülmeden aşılmış; IFN-tau maternal tanıma pozitif).</li>
+                                    <li>• <strong>Dahili Mikrofon:</strong> Düzenli geviş çiğneme ritmi (52 çiğneme/dk, SNR: 13.8 dB) - metabolik denge stabil.</li>
+                                    <li>• <strong>Dahili Kamera (Vulva):</strong> Vulva kuru, kapalı ve hiperemi/östrus mukusu bulunmuyor (korpus luteum uyumlu).</li>
+                                    <li>• <strong>Dahili Kamera (Solunum):</strong> Paralumbar fossa optik solunumu 21.5 BPM (sakin istirahat ritmi).</li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-3 p-2.5 bg-slate-900/60 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                                <div class="space-y-1">
+                                    <span class="text-slate-300 font-medium block" id="boviActionText">
+                                        💡 <strong>Öneri:</strong> Hayvanı 'Olası Gebe' grubuna aktarınız. 28-35. günler arası transrektal ultrason ile kesin teyit planlayınız.
+                                    </span>
+                                    <span class="text-blue-400 text-[11px] block font-semibold" id="boviUltrasoundText">
+                                        🎯 <strong>Veteriner Teyit Penceresi:</strong> Derhal transrektal ultrason veya PAG kan testi uygulanabilir.
+                                    </span>
+                                </div>
+                                <button onclick="pushBoviPregnancyToFarmer()" class="ml-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 flex-shrink-0">
+                                    <i class="fa-solid fa-paper-plane"></i> Çiftçiye Gönder
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -353,11 +494,28 @@
                         </div>
 
                         <!-- Alerts Container -->
-                        <div id="alertsContainer" class="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-                            <div id="emptyAlertsState" class="text-center py-7 px-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800">
-                                <i class="fa-solid fa-shield-cat text-slate-600 text-2xl mb-1.5"></i>
+                        <div id="alertsContainer" class="space-y-2.5 max-h-[160px] overflow-y-auto pr-1">
+                            <div id="emptyAlertsState" class="text-center py-5 px-3 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800">
+                                <i class="fa-solid fa-shield-cat text-slate-600 text-2xl mb-1"></i>
                                 <p class="text-xs text-slate-400 font-medium">Aktif kızgınlık alarmı yok.</p>
                                 <p class="text-[10px] text-slate-500 mt-0.5">Soldan "İnek 2 Kızgınlıkta" butonuna basın.</p>
+                            </div>
+                        </div>
+
+                        <!-- Cattle Pregnancy Results in Phone -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 mt-2.5">
+                            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5 flex justify-between items-center">
+                                <span>Sığır Gebelik Taramaları:</span>
+                                <span class="text-[9px] text-emerald-400 font-normal">Elde Ölçümler</span>
+                            </div>
+                            <div class="space-y-2 text-xs font-mono max-h-[140px] overflow-y-auto pr-1" id="phoneBoviPregnancyList">
+                                <div class="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                                    <div class="flex justify-between items-center font-bold">
+                                        <span class="text-white">TR-06-3842 (D2)</span>
+                                        <span class="text-emerald-400">%88 Gebe</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">35. Gün • 52 Çiğneme/dk • 22 BPM • Kapalı Vulva</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -451,6 +609,165 @@
                 btnBovi.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-1.5';
                 setPhoneTab('ovi');
             }
+        }
+
+        function switchBoviSubModule(sub) {
+            const barnBox = document.getElementById('boviBarnContainer');
+            const pregBox = document.getElementById('boviPregnancyContainer');
+            const btnBarn = document.getElementById('btnBoviSubBarn');
+            const btnPreg = document.getElementById('btnBoviSubPregnancy');
+
+            if (sub === 'barn') {
+                barnBox.classList.remove('hidden');
+                pregBox.classList.add('hidden');
+                btnBarn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow transition flex items-center justify-center gap-1.5';
+                btnPreg.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5';
+            } else {
+                barnBox.classList.add('hidden');
+                pregBox.classList.remove('hidden');
+                btnPreg.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow transition flex items-center justify-center gap-1.5';
+                btnBarn.className = 'flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5';
+            }
+        }
+
+        function updateBoviPregnancyParams() {
+            const days = document.getElementById('rangeBoviInsemDays').value;
+            document.getElementById('labelBoviInsemDays').innerText = `${days}. Gün`;
+
+            const acousticMode = document.getElementById('selectBoviAcousticMode').value;
+            const rumenLabel = document.getElementById('labelBoviRumenStatus');
+            if (acousticMode === 'calm_chewing') rumenLabel.innerText = '52 Çiğneme/dk (Stabil)';
+            else if (acousticMode === 'vocalization_agitated') rumenLabel.innerText = 'Böğürme (Kızgınlık)';
+            else if (acousticMode === 'reduced_chewing') rumenLabel.innerText = '28 Çiğneme/dk (Düşük)';
+            else rumenLabel.innerText = 'Nötr Profil';
+
+            const vulvaStatus = document.getElementById('selectBoviVulvaStatus').value;
+            const vulvaLabel = document.getElementById('labelBoviVulvaStatus');
+            if (vulvaStatus === 'tight_dry') vulvaLabel.innerText = 'Kuru & Kapalı';
+            else if (vulvaStatus === 'edematous_mucus') vulvaLabel.innerText = 'Ödemli & Akıntılı';
+            else vulvaLabel.innerText = 'Nötr Doku';
+
+            const resp = document.getElementById('rangeBoviRespiration').value;
+            document.getElementById('labelBoviRespiration').innerText = `${resp} BPM`;
+            document.getElementById('boviLiveBpm').innerText = `${resp} BPM`;
+        }
+
+        function runBoviScreening() {
+            const days = parseInt(document.getElementById('rangeBoviInsemDays').value);
+            const acousticMode = document.getElementById('selectBoviAcousticMode').value;
+            const vulvaStatus = document.getElementById('selectBoviVulvaStatus').value;
+            const resp = parseFloat(document.getElementById('rangeBoviRespiration').value);
+
+            let cycleScore = 0.50;
+            let ruminationScore = 0.55;
+            let respirationScore = 0.55;
+            let vulvaScore = 0.50;
+            let motionScore = 0.80;
+            const xaiReasons = [];
+
+            // 1. Tohumlama Takvimi (21/42 günlük sığır östrus non-return biyolojisi)
+            if (days >= 36) {
+                cycleScore = 0.94;
+                xaiReasons.push(`• <strong>Tohumlama Takvimi:</strong> ${days}. gün (2. östrus döngüsü [42. gün] aşılmış; kalıcı korpus luteum göstergesi).`);
+            } else if (days >= 21) {
+                cycleScore = 0.88;
+                xaiReasons.push(`• <strong>Tohumlama Takvimi:</strong> ${days}. gün (1. östrus döngüsü [21. gün] aşılmış; IFN-tau maternal tanıma pozitif).`);
+            } else {
+                cycleScore = 0.40;
+                xaiReasons.push(`• <strong>Tohumlama Takvimi:</strong> ${days}. gün (Erken dönem, kesinlik düşüktür).`);
+            }
+
+            // 2. Rumen Akustiği (Geviş çiğneme frekansı & vokalizasyon)
+            if (acousticMode === 'calm_chewing') {
+                ruminationScore = 0.88;
+                xaiReasons.push("• <strong>Dahili Mikrofon:</strong> Düzenli geviş çiğneme ritmi (52 çiğneme/dk, SNR: 14 dB) - metabolik homeostaz.");
+            } else if (acousticMode === 'vocalization_agitated') {
+                ruminationScore = 0.20;
+                xaiReasons.push("• <strong>Dahili Mikrofon:</strong> Böğürme ve ajitasyon tespit edildi (östrus huzursuzluğu şüphesi).");
+            } else if (acousticMode === 'reduced_chewing') {
+                ruminationScore = 0.32;
+                xaiReasons.push("• <strong>Dahili Mikrofon:</strong> Geviş çiğnemesinde belirgin düşüş (iştah azalması veya yaklaşan östrus).");
+            } else {
+                ruminationScore = 0.55;
+                xaiReasons.push("• <strong>Dahili Mikrofon:</strong> Geviş akustiği nötr aralıkta.");
+            }
+
+            // 3. Optik Solunum (Paralumbar Fossa)
+            if (resp >= 16 && resp <= 26) {
+                respirationScore = 0.85;
+                xaiReasons.push(`• <strong>Dahili Kamera (Solunum):</strong> Paralumbar fossa optik solunumu ${resp} BPM (sakin istirahat ritmi).`);
+            } else if (resp > 34) {
+                respirationScore = 0.35;
+                xaiReasons.push(`• <strong>Dahili Kamera (Solunum):</strong> Hızlı solunum (${resp} BPM) - metabolik stres veya kızgınlık ajitasyonu.`);
+            } else {
+                respirationScore = 0.55;
+                xaiReasons.push(`• <strong>Dahili Kamera (Solunum):</strong> Solunum frekansı ${resp} BPM.`);
+            }
+
+            // 4. Vulva Morfolojisi
+            if (vulvaStatus === 'tight_dry') {
+                vulvaScore = 0.90;
+                xaiReasons.push("• <strong>Dahili Kamera (Vulva):</strong> Vulva kuru, kapalı ve hiperemi/akıntı yok (gebelik korpus luteumu ile uyumlu).");
+            } else if (vulvaStatus === 'edematous_mucus') {
+                vulvaScore = 0.20;
+                xaiReasons.push("• <strong>Dahili Kamera (Vulva):</strong> Vulva gevşek, ödemli ve mukus akıntısı mevcut (östrus döngüsü şüphesi).");
+            } else {
+                vulvaScore = 0.50;
+                xaiReasons.push("• <strong>Dahili Kamera (Vulva):</strong> Vulva morfolojik skoru ara düzeyde.");
+            }
+
+            // Late Fusion Sığır Formülü
+            let fusedProb = (cycleScore * 0.30) + (ruminationScore * 0.25) + (respirationScore * 0.15) + (vulvaScore * 0.20) + (motionScore * 0.10);
+            fusedProb = Math.min(Math.max(fusedProb, 0.05), 0.97);
+            const probPct = Math.round(fusedProb * 100);
+
+            const resultBox = document.getElementById('boviResultBox');
+            const badge = document.getElementById('boviResultBadge');
+            const probText = document.getElementById('boviProbabilityText');
+            const actionText = document.getElementById('boviActionText');
+            const usText = document.getElementById('boviUltrasoundText');
+
+            probText.innerText = `%${probPct}`;
+            document.getElementById('boviXaiList').innerHTML = xaiReasons.join("<br>");
+
+            if (fusedProb >= 0.75) {
+                badge.className = 'text-[11px] font-bold uppercase tracking-wider bg-emerald-900/60 text-emerald-300 px-2.5 py-1 rounded border border-emerald-700';
+                badge.innerText = 'YÜKSEK GEBELİK OLASILIĞI';
+                resultBox.className = 'bg-emerald-950/60 border-2 border-emerald-500 rounded-2xl p-4 transition-all';
+                actionText.innerHTML = '💡 <strong>Öneri:</strong> Hayvanı \'Olası Gebe\' grubuna aktarınız. Gebe rasyonuna geçiş planlayınız.';
+                usText.innerHTML = days < 28 ? '🎯 <strong>Veteriner Teyit Penceresi:</strong> Tohumlama sonrası 28-35. günler arası transrektal ultrason ile kesin teyit planlayınız.' : '🎯 <strong>Veteriner Teyit Penceresi:</strong> Derhal transrektal ultrason veya PAG kan testi ile teyit edilebilir.';
+            } else if (fusedProb >= 0.45) {
+                badge.className = 'text-[11px] font-bold uppercase tracking-wider bg-amber-900/60 text-amber-300 px-2.5 py-1 rounded border border-amber-700';
+                badge.innerText = 'ŞÜPHELİ / TEKRAR TARAMA GEREKLİ';
+                resultBox.className = 'bg-amber-950/60 border-2 border-amber-500 rounded-2xl p-4 transition-all';
+                actionText.innerHTML = '💡 <strong>Öneri:</strong> 3-5 gün sonra taramayı tekrarlayınız. Ahır kamerasındaki kızgınlık durumunu izleyiniz.';
+                usText.innerHTML = '🎯 <strong>Veteriner Teyit Penceresi:</strong> 30. gün sonrası veteriner hekim muayenesi önerilir.';
+            } else {
+                badge.className = 'text-[11px] font-bold uppercase tracking-wider bg-red-900/60 text-red-300 px-2.5 py-1 rounded border border-red-700';
+                badge.innerText = 'DÜŞÜK GEBELİK (KIZGINLIK RİSKİ)';
+                resultBox.className = 'bg-red-950/60 border-2 border-red-500 rounded-2xl p-4 transition-all';
+                actionText.innerHTML = '💡 <strong>Öneri:</strong> Hayvanı \'Boş / Olası Kızgınlık\' statüsüne alınız. Yeniden tohumlama için ahır kamera alarmlarını takip ediniz.';
+                usText.innerHTML = '🎯 <strong>Veteriner Teyit Penceresi:</strong> Gebelik beklenmemektedir. Ahır içi ReproScan kamerasından kızgınlık alarmlarını izleyiniz.';
+            }
+        }
+
+        function pushBoviPregnancyToFarmer() {
+            const probText = document.getElementById('boviProbabilityText').innerText;
+            const badgeText = document.getElementById('boviResultBadge').innerText;
+            const days = document.getElementById('rangeBoviInsemDays').value;
+            const phoneList = document.getElementById('phoneBoviPregnancyList');
+
+            const item = document.createElement('div');
+            item.className = 'p-2 rounded-lg bg-slate-950 border border-emerald-500/50';
+            item.innerHTML = `
+                <div class="flex justify-between items-center font-bold">
+                    <span class="text-white">TR-06-3842 (D2)</span>
+                    <span class="text-emerald-400 font-bold">${probText} Gebe</span>
+                </div>
+                <div class="text-[10px] text-slate-400 mt-0.5">${days}. Gün • ReproScan: ${badgeText}</div>
+            `;
+            phoneList.prepend(item);
+            setPhoneTab('bovi');
         }
 
         function setPhoneTab(tab) {

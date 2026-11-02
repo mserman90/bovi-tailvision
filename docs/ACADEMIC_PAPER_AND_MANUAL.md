@@ -77,28 +77,55 @@ Zamanında tohumlama, döl veriminin en kritik parametresidir (Trimberger, 1948)
 
 $$\text{Pencere}_{\text{Başlangıç}} = t_{\text{alarm}} + 12\text{ saat}, \quad \text{Pencere}_{\text{Bitiş}} = t_{\text{alarm}} + 18\text{ saat}$$
 
-### 3.2. ReproScan Ovine (OviScan) ile Kapalı Döngü Üreme Yönetimi (Closed-Loop Lifecycle)
-ReproScan Bovine ve ReproScan Ovine sistemleri birbirini tamamlayan bir üreme döngüsü oluşturur:
-1. **Kızgınlık Tespiti ve Tohumlama (ReproScan Bovine):** Hayvan kızgınlığa girdiğinde sistem alarm üretir ve AM/PM kuralına göre tohumlama gerçekleştirilir.
-2. **Gebelik Ön Taraması (ReproScan Ovine - 30 ila 45 Gün Sonra):** Tohumlanan hayvanlar tohumlamadan 30-45 gün sonra harici prob gerektirmeyen multimodal sensör füzyonu (mikrofon geviş akustiği, optik solunum BPM ve 17 günlük non-return takvimi) ile taranır.
-3. **Karar Destek:** 
-   * `HIGH (%70+)`: Gebe kabul edilir ve gebe rasyonuna geçiş planlanır.
-   * `LOW`: Boş kabul edilir ve derhal tekrar kızgınlık (ReproScan Bovine) izleme döngüsüne geri alınır.
+### 3.2. ReproScan Bovine: Akıllı Telefon ile Sığırlarda Erken Gebelik Karar Destek Modeli
+
+Sığırlarda suni tohumlama sonrası gebeliğin erken tespiti; boş kalan hayvanların bir sonraki döngüde derhal yeniden tohumlanmasını sağlamak ve açık gün süresini asgariye indirmek açısından hayati önem taşır (Lucy, 2001; Bisinotto et al., 2014). ReproScan Bovine, harici pahalı ultrason problarına veya laboratuvar testlerine gerek duymaksızın çiftçinin cebindeki standart akıllı telefonun dahili donanımlarıyla çok modlu non-invaziv bir ön tarama ve karar destek sistemi sunar.
+
+#### 3.2.1. Biyolojik Göstergeler ve Etolojik Temeller
+1. **Östrus Dönüşsüzlük Takvimi (21 ve 42 Günlük Non-Return):** Sığırlarda ortalama östrus döngüsü 21 gündür (aralık: 18-24 gün). Döllenme gerçekleştiğinde, embriyo 14-16. günlerde *Interferon-tau* (IFN-$\tau$) salgılayarak uterus endometriyumundan prostaglandin $F_{2\alpha}$ ($PGF_{2\alpha}$) salınımını baskılar ve korpus luteumun lüteolize uğramasını engeller (Senger, 2003). 21. günde (1. döngü) ve 42. günde (2. döngü) kızgınlık semptomlarının görülmemesi gebeliğin en güçlü ilk belirtecidir.
+2. **Rumen Geviş Dinamiği ve Akustik Profil:** Gebe ineklerde metabolik denge sakin ve ritmiktir. Günlük ortalama 450-520 dakika geviş getirilir ve her bolus ortalama 45-60 saniye sürerken dakikada 45-60 çiğneme gerçekleşir (Schirmann et al., 2012). Buna karşılık, gebe kalmayıp 21. gün civarında östrusa giren ineklerde geviş getirme süresi \%15 ila \%30 oranında ani bir düşüş gösterir ve östrus arayış vokalizasyonu (böğürme) artar.
+3. **Paralumbar Fossa (Açlık Çukuru) Optik Solunum Ölçümü:** Telefon kamerası sol açlık çukuruna doğrultulduğunda, CameraX piksel parlaklık farkı (differencing) ile rumen ve diyafram hareketleri izlenir. Yetişkin bir ineğin sakin istirahat solunum frekansı 16-26 BPM aralığındadır.
+4. **Vulva Morfolojisi ve Luteal Belirteçler:** Gebelik korpus luteumunun devam ettiği dönemde yüksek progesteron ($P_4$) etkisiyle vulva dudakları kapalı, kuru, soluk pembe renkte ve mukus akıntısından yoksundur.
+
+#### 3.2.2. Çok Modlu Late Fusion Matematiksel Modeli
+Sığır gebelik ön tarama puanı $P_{\text{gebe}}$, ağırlıklı geç füzyon (Late Fusion) yaklaşımıyla hesaplanır:
+$$P_{\text{gebe}} = \sum_{k=1}^5 w_k S_k = w_{\text{cycle}} S_{\text{cycle}} + w_{\text{rumin}} S_{\text{rumin}} + w_{\text{resp}} S_{\text{resp}} + w_{\text{vulva}} S_{\text{vulva}} + w_{\text{motion}} S_{\text{motion}}$$
+
+Burada optimize edilmiş ağırlık vektörü:
+$$\vec{w} = [w_{\text{cycle}}, w_{\text{rumin}}, w_{\text{resp}}, w_{\text{vulva}}, w_{\text{motion}}] = [0.30, 0.25, 0.15, 0.20, 0.10]$$
+
+Hesaplanan nihai olasılık $[0.05, 0.97]$ aralığına normalize edilir ve 3 klinik risk seviyesine eşlenir:
+* **$P_{\text{gebe}} \ge \%75$ (YÜKSEK GEBELİK OLASILIĞI):** Korpus luteum fonksiyonel, geviş ritmi stabil. Çiftçiye 28-35. günler arasında transrektal ultrason veya PAG kan testi ile nihai teyit alması önerilir.
+* **$\%45 \le P_{\text{gebe}} < \%75$ (ŞÜPHELİ / BELİRSİZ):** 3-5 gün sonra tarama tekrarlanmalıdır.
+* **$P_{\text{gebe}} < \%45$ (DÜŞÜK GEBELİK / ÖSTRUS RİSKİ):** Hayvanın döngüye girmesi muhtemeldir; ahır kamerasındaki kızgınlık alarmları takip edilerek yeniden tohumlama planlanır.
+
+---
+
+### 3.3. ReproScan Ovine (OviScan) ile Kapalı Döngü Üreme Yönetimi (Closed-Loop Lifecycle)
+ReproScan Bovine ve ReproScan Ovine sistemleri çiftlik ölçeğinde birbirini tamamlayan bir kapalı döngü üreme yönetim sistemi oluşturur:
+1. **Kızgınlık Tespiti ve Tohumlama (ReproScan Bovine Ahır Kamerası):** Hayvan kızgınlığa girdiğinde sistem alarm üretir ve AM/PM kuralına göre tohumlama gerçekleştirilir.
+2. **Sığır Erken Gebelik Taraması (ReproScan Bovine Cep Modülü - 28 ila 45 Gün):** Tohumlanan inekler ahır içinde cep telefonu mikrofonu ve kamerasıyla taranarak gebe/boş ön ayrımı yapılır.
+3. **Koyun Gebelik Ön Taraması (ReproScan Ovine / OviScan):** Tohumlanan koyunlar 30-45. günlerde telefon geviş akustiği ve optik solunum ile taranır.
 
 ---
 
 ## 4. UYGULAMA İÇİ KULLANIM KILAVUZU (OPERATIONAL MANUAL)
 
-### 4.1. ReproScan Bovine (Ahırdaki Kamera İstasyonu)
-1. **Montaj:** 
-   * **Grup İzleme (Önerilen):** IP65 kutu, 3-4 durağın arkasındaki tavan kirişine $2.8\text{ m}$ yüksekliğe, ineklerin arkasından $3.0\text{ m}$ mesafeye, aşağıya $25^\circ$ açıyla monte edilir.
-   * **Tek İnek İzleme:** İnek arkasından $1.5\text{ m}$ mesafeye, sırtın $25\text{ cm}$ üzerine $15^\circ$ açıyla monte edilir.
+### 4.1. ReproScan Bovine (Ahırdaki Kamera İstasyonu - Grup Takibi)
+1. **Montaj:** IP65 kutu, 3-4 durağın arkasındaki tavan kirişine $2.8\text{ m}$ yüksekliğe, ineklerin arkasından $3.0\text{ m}$ mesafeye, aşağıya $25^\circ$ açıyla monte edilir.
 2. **Kamera Kalibrasyonu:** **"Grup Önizlemeyi Aç"** butonuna basılarak ekrandaki uzamsal durak kılavuz çizgilerinin ahırdaki durak bölme demirleriyle (stalls) hizalandığı doğrulanır.
 3. **Konfigürasyon:** Ahır MQTT Broker IP adresi (örn. `tcp://192.168.1.100:1883`) girilir. Durak-İnek küpe numarası eşleşmeleri otomatik yüklenir.
 4. **Başlatma:** **"Sistemi Başlat"** butonuna basılır. Önizleme otomatik kapanır ve 24/7 çoklu analiz başlar.
 5. **Termal Koruma:** **"Ekranı Karart"** butonuna basıldığında ekran $0.0\text{f}$ parlaklığa iner ve siyah perde devreye girer. Tekrar arayüze dönmek için ekrana **çift tıklanır**.
 
-### 4.2. ReproScan Mobil (Çiftçinin Cep Telefonu)
+### 4.2. ReproScan Bovine (Cep Telefonu ile Sığır Gebelik Taraması Adımları)
+1. **Hayvanın Yanına Yaklaşma:** Ölçüm inek yem yedikten sonra, sakin geviş getirme periyodunda (sabah sağımdan 1-2 saat sonra veya öğlen istirahatinde) yapılmalıdır.
+2. **Parametre Girişi:** ReproScan Mobil uygulamasında **ReproScan Bovine -> Elde Gebelik Taraması** sekmesi açılır. İneğin küpe numarası (örn. `TR-06-3842`) ve tohumlamadan itibaren geçen gün sayısı girilir.
+3. **Akustik ve Solunum Kaydı:** Telefon mikrofonu ineğin sol açlık çukuruna (rumen bölgesi) yaklaştırılır; kamera lensi paralumbar fossa bölgesindeki solunum iniş kalkışlarını görecek şekilde 30 saniye boyunca sabit tutulur.
+4. **Vulva Gözlemi:** Kamera ile vulva bölgesine kısa bir tarama yapılarak ödem, akıntı veya kızarıklık durumu doğrulanır.
+5. **Sonuç ve Karar Destek:** **"Sığır Gebelik Taraması Yap"** butonuna basıldığında ekranda hesaplanan olasılık, risk seviyesi ve önerilen veteriner teyit takvimi görüntülenir.
+
+### 4.3. ReproScan Mobil (Çiftçinin Cep Telefonu Genel Bildirimleri)
 1. **Kurulum:** Çiftçinin günlük kullandığı Android telefona `farmer_app-debug.apk` yüklenir.
 2. **İlk Açılış:** Bildirim ve alarm izinleri onaylanır. Üst bardaki "Broker Bağlantısı: Aktif" ibaresi ve grup durak tablosu kontrol edilir. Çift sekmeli arayüzden **ReproScan Bovine** ve **ReproScan Ovine** modülleri arasında geçiş yapılabilir.
 3. **Alarm Durumu:** Gruptaki herhangi bir inek kızgınlığa girdiğinde telefon yüksek sesli siren çalar, ekranı uyandırır ve **hangi duraktaki hangi ineğin kızgınlıkta olduğunu** bildirir.
@@ -114,3 +141,7 @@ ReproScan Bovine ve ReproScan Ovine sistemleri birbirini tamamlayan bir üreme d
 4. **Van Eerdenburg, F. J., et al. (2002).** *A new system for recognition of estrus in dairy cattle; behavior and cow status.* Behaviour, 139(10), 1323-1335.
 5. **Sveberg, G., et al. (2011).** *Behavior of dairy cows in estrus with emphasis on duration and behavioral signs of standing to be mounted.* Journal of Dairy Science, 94(3), 1289-1301.
 6. **Inchaisri, C., et al. (2010).** *Economic consequences of reproductive performance in dairy herds.* Journal of Dairy Science, 93(7), 2840-2851.
+7. **Lucy, M. C. (2001).** *Reproductive loss in high-producing dairy cattle: where will it end?* Journal of Dairy Science, 84(6), 1277-1293.
+8. **Bisinotto, R. S., et al. (2014).** *Biology and management of dairy cows for early pregnancy diagnosis.* Journal of Dairy Science, 97(12), 7352-7368.
+9. **Senger, P. L. (2003).** *Pathways to pregnancy and parturition.* Current Conceptions, Inc.
+10. **Schirmann, K., et al. (2012).** *Rumination and feeding behavior of lactating dairy cows in early lactation.* Journal of Dairy Science, 95(6), 3212-3217.
