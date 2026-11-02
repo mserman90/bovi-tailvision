@@ -15,6 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bovivision.farmer.adapter.AlertAdapter
 import com.bovivision.farmer.databinding.ActivityFarmerMainBinding
 import com.bovivision.farmer.model.FarmerAlertModel
+import com.bovivision.farmer.oviscan.domain.model.MeasurementMode
+import com.bovivision.farmer.oviscan.domain.model.PregnancyRiskLevel
+import com.bovivision.farmer.oviscan.domain.model.SensorDataBatch
+import com.bovivision.farmer.oviscan.ml.LateFusionClassifier
 import com.bovivision.farmer.service.FarmerAlertListenerService
 
 class FarmerMainActivity : AppCompatActivity() {
@@ -39,6 +43,7 @@ class FarmerMainActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupListeners()
+        setupOviScanIntegration()
         checkPermissionsAndStart()
     }
 
@@ -52,7 +57,26 @@ class FarmerMainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Servisten canlı alarm gelince UI'ı güncelle
+        // Sekme Değiştirici: Büyükbaş (Bovi) vs Küçükbaş (OviScan)
+        binding.btnTabBovi.setOnClickListener {
+            binding.layoutBoviView.visibility = View.VISIBLE
+            binding.layoutOviView.visibility = View.GONE
+            binding.btnTabBovi.setBackgroundColor(Color.WHITE)
+            binding.btnTabBovi.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnTabOvi.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnTabOvi.setTextColor(Color.WHITE)
+        }
+
+        binding.btnTabOvi.setOnClickListener {
+            binding.layoutBoviView.visibility = View.GONE
+            binding.layoutOviView.visibility = View.VISIBLE
+            binding.btnTabOvi.setBackgroundColor(Color.WHITE)
+            binding.btnTabOvi.setTextColor(Color.parseColor("#1B5E20"))
+            binding.btnTabBovi.setBackgroundColor(Color.TRANSPARENT)
+            binding.btnTabBovi.setTextColor(Color.WHITE)
+        }
+
+        // Bovi-TailVision Servisinden Canlı Alarm Dinleme
         FarmerAlertListenerService.onAlertReceivedListener = { alert ->
             runOnUiThread {
                 adapter.addAlert(alert)
@@ -64,13 +88,63 @@ class FarmerMainActivity : AppCompatActivity() {
         FarmerAlertListenerService.onConnectionStateChanged = { connected ->
             runOnUiThread {
                 if (connected) {
-                    binding.tvConnectionStatus.text = getString(R.string.status_connected)
+                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Aktif (Bovi + Ovi Canlı)"
                     binding.tvConnectionStatus.setTextColor(Color.parseColor("#C8E6C9"))
                 } else {
-                    binding.tvConnectionStatus.text = getString(R.string.status_disconnected)
+                    binding.tvConnectionStatus.text = "Ahır IoT Broker: Bağlantı Kesildi"
                     binding.tvConnectionStatus.setTextColor(Color.parseColor("#FFCDD2"))
                 }
             }
+        }
+    }
+
+    private fun setupOviScanIntegration() {
+        // OviScan Hızlı Gebelik Ön Tarama Tetikleyicisi
+        binding.btnRunOviScan.setOnClickListener {
+            val tag = binding.etSheepTag.text.toString().trim().ifEmpty { "TR-06-KOYUN-01" }
+            val days = binding.etInsemDays.text.toString().trim().toIntOrNull() ?: 42
+
+            // Dahili telefon sensör simülasyon batch'i oluştur
+            val batch = SensorDataBatch(
+                earTag = tag,
+                daysSinceInsemination = days,
+                mode = MeasurementMode.SPOT_CHECK,
+                acousticEventCount = 3,
+                audioSnrDb = 14.2f,
+                estimatedPitchHz = 185f,
+                motionAverageMagnitude = 0.62f,
+                lyingRatio = 0.44f,
+                cameraRespirationBpm = 31.0f
+            )
+
+            // Multimodal Late Fusion Sınıflandırıcıyı Çalıştır
+            val result = LateFusionClassifier.classify(batch)
+
+            // UI'da Sonucu Göster
+            binding.cardOviResult.visibility = View.VISIBLE
+            binding.tvOviTagTitle.text = result.earTag
+            binding.tvOviProbabilityBadge.text = String.format("%%%d GEBELİK OLASILIĞI", (result.probability * 100).toInt())
+
+            when (result.riskLevel) {
+                PregnancyRiskLevel.HIGH -> {
+                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#2E7D32"))
+                    binding.cardOviResult.strokeColor = Color.parseColor("#2E7D32")
+                }
+                PregnancyRiskLevel.INCONCLUSIVE -> {
+                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#F57F17"))
+                    binding.cardOviResult.strokeColor = Color.parseColor("#F57F17")
+                }
+                PregnancyRiskLevel.LOW -> {
+                    binding.tvOviProbabilityBadge.setBackgroundColor(Color.parseColor("#C62828"))
+                    binding.cardOviResult.strokeColor = Color.parseColor("#C62828")
+                }
+            }
+
+            binding.tvOviRiskDesc.text = result.riskLevel.descriptionTr
+            binding.tvOviRecommendation.text = "Öneri: " + result.riskLevel.recommendedActionTr
+            binding.tvOviXaiReasons.text = result.xaiReasons.joinToString("\n• ", prefix = "• ")
+
+            Toast.makeText(this, "${result.earTag} için OviScan taraması tamamlandı.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -115,7 +189,6 @@ class FarmerMainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Servisteki mevcut alarmları yükle
         if (alertList.isEmpty() && FarmerAlertListenerService.activeAlerts.isNotEmpty()) {
             alertList.addAll(FarmerAlertListenerService.activeAlerts)
             adapter.notifyDataSetChanged()

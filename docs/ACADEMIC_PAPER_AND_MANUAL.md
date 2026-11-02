@@ -68,13 +68,22 @@ Tek bir kameranın kadrajında $M$ adet inek ($M \in [2, 6]$) yer aldığında:
 
 ---
 
-## 3. TRIMBERGER AM/PM TOHUMLAMA PROTOKOLÜ
+## 3. TRIMBERGER AM/PM TOHUMLAMA PROTOKOLÜ VE OVISCAN ENTEGRASYONU
 
+### 3.1. AM/PM Tohumlama Kuralı (Büyükbaş)
 Zamanında tohumlama, döl veriminin en kritik parametresidir (Trimberger, 1948). Bovi-Farmer uygulaması tohumlama penceresini şu kurala göre hesaplar:
 * **Kızgınlık Sabah Fark Edilirse (04:00 - 12:00):** Aynı günün akşamı/ikindisi (tespitten 12 - 18 saat sonra) tohumlanır.
 * **Kızgınlık Akşam/Gece Fark Edilirse (12:00 - 04:00):** Ertesi sabah (tespitten 12 - 18 saat sonra) tohumlanır.
 
 $$\text{Pencere}_{\text{Başlangıç}} = t_{\text{alarm}} + 12\text{ saat}, \quad \text{Pencere}_{\text{Bitiş}} = t_{\text{alarm}} + 18\text{ saat}$$
+
+### 3.2. OviScan ile Kapalı Döngü Üreme Yönetimi (Closed-Loop Reproductive Lifecycle)
+Bovi-TailVision ve OviScan sistemleri birbirini tamamlayan bir üreme döngüsü oluşturur:
+1. **Kızgınlık Tespiti ve Tohumlama (Bovi):** Hayvan kızgınlığa girdiğinde Bovi-TailVision alarm üretir ve AM/PM kuralına göre tohumlama gerçekleştirilir.
+2. **Gebelik Ön Taraması (OviScan - 30 ila 45 Gün Sonra):** Tohumlanan hayvanlar tohumlamadan 30-45 gün sonra harici prob gerektirmeyen OviScan multimodal sensör füzyonu (mikrofon geviş akustiği, optik solunum BPM ve 17 günlük non-return takvimi) ile taranır.
+3. **Karar Destek:** 
+   * `HIGH (%70+)`: Gebe kabul edilir ve gebe rasyonuna geçiş planlanır.
+   * `LOW`: Boş kabul edilir ve derhal tekrar kızgınlık (Bovi-TailVision) izleme döngüsüne geri alınır.
 
 ---
 

@@ -1,6 +1,10 @@
-# Bovi-TailVision: Eski Model Android Cihazlar İçin Görüntü İşleme Tabanlı Sığır Kızgınlık Tespit Sistemi
+# Bovi-TailVision & OviScan: Akıllı Ruminant Üreme ve Sürü Yönetim Platformu
 
-Bovi-TailVision; bağlı duraklı veya serbest ahırlarda, ineğin veya bir **grup ineğin (3 ila 6 durak/yemlik kilit sırası)** kaudal (pelvis) açısına sabitlenecek **eski model Android akıllı telefonların** kamera ve yerleşik işlem gücünü kullanarak kuyruk açısı sapması, vulvanın açığa çıkma süresi/frekansı ve mikro-hareket dinamiklerini gerçek zamanlı izleyip kızgınlık (östrus) alarmları üreten uç nokta (Edge Computing) sistemidir.
+Bu proje; büyükbaş ve küçükbaş hayvancılıkta harici donanım maliyetlerini ortadan kaldırarak atıl ve standart Android akıllı telefonların yerleşik donanımlarını (kamera, mikrofon, ivmeölçer) yapay zeka ile buluşturan birleşik bir platformdur:
+
+1. 🐄 **Bovi-TailVision (Büyükbaş Sığır):** Ahırda durak sırasına (3-6 inek) bakan sabit telefonla 7/24 bilgisayarlı görü ve iskelet takibi yaparak kuyruk sapması ve vulva açığa çıkması üzerinden **kızgınlık (östrus) tespiti** ve AM/PM tohumlama penceresi üretir.
+2. 🐑 **OviScan (Küçükbaş Koyun & Keçi):** Harici prob gerektirmeksizin dahili telefon sensörleri (mikrofon geviş akustiği, kamera optik solunum BPM'i ve ivmeölçer) ile tohumlama sonrası **gebelik ön taraması, BCS kondisyon ve karar destek** sağlar ([OviScan GitHub Deposu](https://github.com/mserman90/oviscan-android)).
+3. 📱 **Bovi-Farmer (Birleşik Çiftçi Uygulaması):** Çiftçinin cebindeki tek bir mobil uygulamada hem sığır kızgınlık alarmlarını sesli sirenle karşılar hem de koyun gebelik ön tarama sonuçlarını yönetir.
 
 ---
 
@@ -17,23 +21,19 @@ bovi-tailvision/
 │   │   │   │   ├── MultiCowTracker.kt        # Uzamsal durak eşleme ve MOT takip motoru
 │   │   │   │   ├── KinematicsEngine.kt       # Vektörel açı & sapma motoru
 │   │   │   │   └── TemporalMovementFilter.kt # Dışkılama ve sinek savurma filtresi
-│   │   │   ├── service/
-│   │   │   │   ├── EstrusDetectionService.kt # 7/24 Kesintisiz Foreground Servis
-│   │   │   │   └── BootReceiver.kt           # Cihaz açıldığında oto-başlatıcı
-│   │   │   ├── network/
-│   │   │   │   ├── MqttManager.kt            # Uç birim MQTT yayıncısı
-│   │   │   │   └── TelemetryModels.kt        # JSON telemetri & alarm modelleri
-│   │   │   └── utils/
-│   │   │       └── DeviceHealthMonitor.kt    # CPU sıcaklık, RAM ve batarya takibi
+│   │   │   ├── service/                      # 7/24 Kesintisiz Foreground Servis
+│   │   │   └── network/                      # Uç birim MQTT yayıncısı
 │   │   └── src/main/assets/bovi_tail_pose.tflite
 │   │
-│   ├── farmer_app/            # [ÇİFTÇİ CEP TELEFONU UYGULAMASI]
+│   ├── farmer_app/            # [BİRLEŞİK ÇİFTÇİ CEP UYGULAMASI]
 │   │   ├── src/main/java/com/bovivision/farmer/
-│   │   │   ├── FarmerMainActivity.kt         # Sürü/grup alarm listesi & tohumlama takibi
+│   │   │   ├── FarmerMainActivity.kt         # Çift sekmeli arayüz (Bovi + Ovi)
+│   │   │   ├── oviscan/                      # [OVISCAN ENTEGRASYONU]
+│   │   │   │   ├── domain/model/             # Gebelik risk seviyeleri & sensör batch'i
+│   │   │   │   └── ml/LateFusionClassifier.kt # Çok modlu gebelik ön tarama füzyonu
 │   │   │   ├── service/FarmerAlertListenerService.kt # Sesli siren/titreşimli uyarı servisi
-│   │   │   ├── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
-│   │   │   └── model/FarmerAlertModel.kt     # AM/PM kuralı hesaplayıcı
-│   │   └── src/main/res/layout/
+│   │   │   └── adapter/AlertAdapter.kt       # Alarm kartları & durak onay mekanizması
+│   │   └── src/main/res/layout/activity_farmer_main.xml
 │   │
 │   ├── build.gradle.kts
 │   └── settings.gradle.kts

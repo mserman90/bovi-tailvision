@@ -6,37 +6,40 @@
 
 Bovi-TailVision, tek bir eski model Android telefonun geniş açılı kamerasıyla ahırdaki bir grup ineği (3-6 durak / yemlik kilit sırası) aynı anda izleyebilir. Derin öğrenme çıkarımı (`YOLO11n-pose INT8`) kare başına **tek bir geçişte (Single Inference Pass)** tüm ineklerin iskeletlerini tespit eder; ardından uzamsal durak eşleme motoru (`MultiCowTracker`) her hayvanı kendi durağına zimmetler.
 
+Ayrıca sistem, **OviScan (Küçükbaş Gebelik Ön Tarama ve Karar Destek)** sistemi ile tam entegre çalışarak çiftlikteki hem büyükbaş (sığır kızgınlık & tohumlama) hem de küçükbaş (koyun gebelik ön tarama) süreçlerini tek bir IoT broker ve çiftçi mobil uygulamasında birleştirir.
+
 ```mermaid
 flowchart TD
-    subgraph EdgeDevice ["Ahırdaki Geniş Açı Kamera (Grup İzleme)"]
+    subgraph BoviEdge ["Bovi-TailVision: Ahırdaki Sabit Kamera (Grup İzleme)"]
         Cam[Kamera Donanımı 15 FPS - Geniş Açı] --> Pre[Zero-Alloc Preprocessor]
         Pre --> TFLite[YOLO11n-Pose INT8: Çoklu Tespit]
         TFLite --> MOT[MultiCowTracker: Uzamsal Durak Eşleme]
-        
-        MOT --> Cow1[İnek 1 - Durak 1: Kayan Pencere]
-        MOT --> Cow2[İnek 2 - Durak 2: Kayan Pencere]
-        MOT --> Cow3[İnek 3 - Durak 3: Kayan Pencere]
-        
-        Cow1 --> Filter1[Dışkılama & Sinek Filtresi]
-        Cow2 --> Filter2[Dışkılama & Sinek Filtresi]
-        Cow3 --> Filter3[Dışkılama & Sinek Filtresi]
-
-        Filter2 -- R_open >= %65 --> Alert[Kızgınlık Alarmı: Durak 2]
+        MOT --> Cow1[İnek 1: Kayan Pencere]
+        MOT --> Cow2[İnek 2: Kayan Pencere]
+        MOT --> Cow3[İnek 3: Kayan Pencere]
+        Cow2 -- R_open >= %65 --> AlertBovi[Kızgınlık Alarmı: Durak 2]
     end
 
-    subgraph FarmServer ["Ahır Yerel Sunucusu (MQTT Broker)"]
+    subgraph OviModule ["OviScan: El Tipi Mobil Gebelik Ön Tarama"]
+        Sensors[Mikrofon + İvmeölçer + Optik Solunum] --> Fusion[LateFusionClassifier: Çok Modlu Füzyon]
+        Calendar[17 Günlük Non-Return Takvimi] --> Fusion
+        Fusion --> ScreenResult[Gebelik Ön Tarama Kararı: %84 Gebe]
+    end
+
+    subgraph FarmServer ["Ahır & Ağıl Yerel Sunucusu (MQTT Broker)"]
         Broker[Mosquitto MQTT Broker]
         Bridge[Farm Dashboard & Push Bridge]
-        DB[(estrus_alerts.csv)]
+        DB[(farm_unified_reproductive_log.csv)]
     end
 
-    subgraph FarmerMobile ["Çiftçinin Cep Telefonu (Bovi-Farmer App)"]
+    subgraph FarmerMobile ["Bovi-Ovi Çiftçi Takip Uygulaması (Tek Ekran)"]
         Listener[FarmerAlertListenerService]
+        UI[FarmerMainActivity: Bovi + Ovi Çift Sekmeli Panel]
         Siren[Sesli Siren & Titreşim Alarmı]
-        UI[FarmerMainActivity: Durak 2 İzolasyonu & AM/PM]
     end
 
-    Alert -->|QoS 2: farm/tailvision/COW_ID/estrus_alert| Broker
+    AlertBovi -->|QoS 2: farm/tailvision/COW_ID/estrus_alert| Broker
+    ScreenResult -->|QoS 1: farm/oviscan/TAG/pregnancy_screen| Broker
     Broker --> Bridge
     Bridge --> DB
     Broker -->|Canlı Push| Listener
